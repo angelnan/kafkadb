@@ -499,7 +499,7 @@ FROM res_partner</sql>
     </step>
 
   <step>
-    <name>depens-res_partner_title</name>
+    <name>depends-res_partner_title</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
