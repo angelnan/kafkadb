@@ -1,0 +1,1737 @@
+{
+    "res_groups_act_todo_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_payment_term_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "audittrail_log_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_picking": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/account_payment_extension/stock_picking.ktr", 
+            "model-ktr/stock/stock_picking.ktr"
+        ]
+    }, 
+    "idea_vote": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_bank_statement_line_move_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_journal": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/base/account_journal.ktr"
+        ]
+    }, 
+    "account_account_type_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "scrum_meeting": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_analytic_planning_stat_account": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_users_act_todo_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_method_usage": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_balance_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "wkf_instance": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_actions": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_bank_statement": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "project_task": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "purchase_order_line_invoice_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_company_address": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_sequence_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_bom": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_currency": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_entries_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_method": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "maintenance_contract_module": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_values": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_invoice_created": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "email_smtpclient_history": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_holidays_status": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_model_fields_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_exports_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_journal_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_analytic_planning_stat_user": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_module_category": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_move": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_cron": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_price_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_bank_type_field": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_holidays": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_analytic_account": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/base/account_analytic_account.ktr"
+        ]
+    }, 
+    "project_gtd_timebox": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "analytic_entries_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_routing": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_routing_workcenter": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_config_users": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_act_url": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_groups_wizard_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_bank_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_balance_report_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_timesheet_sheet_sheet": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_company_users_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "board_note_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_report_tracklots": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_holidays_log": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "rel_server_actions": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "network_protocol": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "maintenance_contract_module_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_bank_statement_line_data": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_production_move_ids": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_analytic_planning_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_balance_report_account_period_previous_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_act_report_custom": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_aeat_mod347_real_state_record": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_anticipo": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "fts_full_text_search": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_report_custom_fields": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_invoice_tax": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_production_product_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "process_transition_roles_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_timesheet_user": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_model_access": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "template_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_fiscal_position_tax": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_timesheet_task_user": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_workcenter": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_stock_lines_date": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_widget_user": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_bank": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_fiscal_year_closing_fyc": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "poweremail_mailbox": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_act_wizard": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "document_directory_ics_fields": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_extractos_concepto": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "payment_type": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/account_payment_extension/payment_type.ktr"
+        ]
+    }, 
+    "use_control_db_block": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_documentation_view": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case_history": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_fiscal_position_tax_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_random_timesheet": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "network_software_logpass": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_fiscalyear": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "email_smtpclient": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_analytic_planning": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_documentation_file": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_production_lot": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_order_line_property_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "purchase_order": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/purchase/purchase_order.ktr"
+        ]
+    }, 
+    "network_software": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "network_hardware_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "idea_comment": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_category": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_timesheet_account": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_aeat_mod347_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_journal": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_act_window_view": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "process_condition": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_tax": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "user_rule_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "project_user_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_timesheet_sheet_sheet_day": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "procurement_order": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_aeat_mod347_invoice_record": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_journal_column": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_invoice": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_pricelist": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/product/product_pricelist.ktr"
+        ]
+    }, 
+    "project_task_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_analytic_timesheet": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_journal_type_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_shop_account": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_payterm": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_procurement": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_procurement_property_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_property": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_request_history": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_board": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_attachment": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "subscription_document_fields": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/base/res_partner.ktr"
+        ]
+    }, 
+    "ir_documentation_menu": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_timesheet_sheet_sheet_account": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_country_state": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_title": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/base/res_partner_title.ktr"
+        ]
+    }, 
+    "product_pricelist_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_history": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_crm_case_service_dashboard": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_analytic_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_action_reason": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "scrum_product_backlog": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_ui_view_custom": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_crm_analytic": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "idea_vote_stat": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_country": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_bank_statement_reconcile_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_move_asset_entry_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "process_process": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_groups_users_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "audittrail_rule": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_inventory_move_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "maintenance_contract": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_timesheet_account_date": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_property_group": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_groups": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "project_task_type_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "project_task_parent_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_account": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_ui_menu": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_model": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_model_fields": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "document_directory_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_bank_statement_line_rule": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_tax_code": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "decimal_precision": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mail_attachments_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_holidays_per_user": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "wkf_activity": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_cierre_ejercicio_fyc_nlp_account_map": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_translation": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_closed_task": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_report_custom": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "wkf_logs": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_documentation_screenshot": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "asterisk_phone": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_move_reconcile": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_analytic_journal": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/base/account_analytic_journal.ktr"
+        ]
+    }, 
+    "document_directory": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "pricelist_partnerinfo": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_category": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_actions_todo": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "document_directory_content": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_property": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/base/ir_property.ktr"
+        ]
+    }, 
+    "rendered_view_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "project_vs_hours": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "payment_mode": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/account_payment_extension/payment_mode.ktr"
+        ]
+    }, 
+    "account_sequence_fiscalyear": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "board_note": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_receivable": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "email_smtpclient_queue": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_filters": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "payment_order": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "network_network": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_warehouse": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/stock/stock_warehouse.ktr"
+        ]
+    }, 
+    "wkf_triggers": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_roles": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_crm_case_section_stage": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "project_project": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/project/project_project.ktr"
+        ]
+    }, 
+    "use_control_time_month_user": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_pricelist_version": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_move": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/stock/stock_move.ktr"
+        ]
+    }, 
+    "sale_order": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_smtpserver_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_aeat_mod347_cash_record": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_attendance": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "fields_table_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_order_invoice_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_crm_case_section_categ_stage": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_exports": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_tax_code_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_stock_move": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_sequence": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_config_parameter": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_project_task_user": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "nan_koo_cache_exception": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_report_prodlots": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_property": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_segmentation_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "scrum_team": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "scrum_team_users_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_aeat_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_voucher": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_request": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_bom_revision": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_hr_timesheet_invoice_journal": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "rendered_menu_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "use_control_time_month": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "network_material": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case_work": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_widget": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_supplier_taxes_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_rule_group": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_method_defaults": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_invoice_line_tax": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_journal_simulation": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case_section": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "rule_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_balance_report_template_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_task_user_pipeline_open": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "audittail_rules_users": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_log_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_groups_report_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "process_transition_ids": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_lang": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_event": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_account_consol_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "purchase_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "scrum_sprint": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_ui_menu_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_account_tax_default_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_documentation_paragraph": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "nan_koo_release": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_ui_view": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "network_changes": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_balance_report_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_model_data": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "wkf_transition": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_crm_case_categ": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_module_module": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_department_user_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_fiscal_position_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "subscription_document": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_nomina": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case_log": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_ui_view_sc": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_order_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_account_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "fiscalyear_seq": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_crm_case_user": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_cashbox_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case_rule": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_log": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_ul": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_production_lot_revision": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_category": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_method_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_packaging": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "process_node": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_category_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "idea_category": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_function": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_model_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_timesheet": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_module_repository": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_cierre_ejercicio_fyc_c_account_map": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_actions_report_xml_file": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "wkf_workitem": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "idea_idea": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_segmentation": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_documentation_field": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_address": {
+        "migrate": false, 
+        "transformation": [
+            "model-ktr/base/res_partner_address.ktr"
+        ]
+    }, 
+    "wkf": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_currency_rate": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_fiscal_position_account_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "purchase_order_taxe": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case_category2": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_account_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "poweremail_conversation": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_journal_simulation_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "multi_company_default": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case_stage": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_product": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "network_software_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_som": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_bank_statement_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_subscription": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "bank_type_payment_type_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_subscription_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_location": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "nan_koo_view_settings": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "poweremail_templates_reports": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "documentation_paragraph_rendered_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_order_tax": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "publisher_warranty_contract": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "poweremail_core_accounts": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_account_template_tax_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_act_report_xml": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_fiscal_year_closing_fyc_nlp_account_map": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "purchase_invoice_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_canal": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_crm_case_section_categ2": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_payment_term": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "process_transition": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_inventory": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "board_board_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_order_line_invoice_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "document_directory_content_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_roles_users_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_crm_case_section_categ_categ2": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_period": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "rendered_field_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "network_service": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_property_history": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_invoice_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "nan_koo_settings": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "poweremail_engines": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "group_rule_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_cierre_ejercicio_fyc_lp_account_map": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_server_object_lines": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "random_timesheet_lines": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_rule": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_timesheet_group": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_fiscal_year_closing_fyc_c_account_map": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_balance_report_account_period_current_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_timesheet_invoice": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "audittrail_log": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_report_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_analytic_planning_stat": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_journal_period": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_cierre_ejercicio_fyc": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_journal_view": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_timesheet_invoice_factor": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_production": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_groups_action_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "process_transition_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_partner_event_type": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_act_window": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_sales": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_module_module_dependency": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_department": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_incoterms": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_stock_inventory": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "process_transition_action": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "fts_current_full_text_index": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_fiscal_position_account": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "nan_time_entry": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "wkf_witm_trans": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_uom": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_fiscal_position": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "crm_case_categ": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_smtp_server": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "purchase_order_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_voucher_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "subscription_subscription": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_company": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "fts_priority": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_shop": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "temp_range": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_uom_categ": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_bank_statement_line_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "task_by_days": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_request_link": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_employee_category": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_move_history_ids": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "nan_koo_settings_roles_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_aged_receivable": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_users": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_tax_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_act_window_group_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "hr_employee": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_bom_property_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_tracking": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_warehouse_orderpoint": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_model_config": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_documentation_paragraph_rendered": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_move_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_invoice_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "board_board": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_chart_template": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "fts_full_text_index": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "project_task_work": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_analytic_line_to_invoice": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_crm_case_section": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_bank_statement_reconcile": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_default": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "res_bank": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "payment_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "stock_inventory_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "account_asset_asset": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "mrp_production_workcenter_line": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "report_account_type_sales": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_model": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_fiscal_year_closing_fyc_lp_account_map": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_supplierinfo": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "subscription_subscription_history": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "sale_receipt_report": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_pricelist_item": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "project_gtd_context": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "product_taxes_rel": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "use_control_time": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "poweremail_templates": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "asterisk_server": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "l10n_es_aeat_mod347_partner_record": {
+        "migrate": false, 
+        "transformation": []
+    }, 
+    "ir_act_server": {
+        "migrate": false, 
+        "transformation": []
+    }
+}
