@@ -63,8 +63,17 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            KettleEnvironment.init();
-            Migrate.start();
+        	String migration_filename = "migrate.json";
+        	if(args.length == 1 ){
+        		migration_filename = args[0];
+        	}
+        	String kettle_shared = "shared.xml";
+        	if( args.length == 2){
+        		kettle_shared = args[1];
+        	}
+        			
+            KettleEnvironment.init( );
+            Migrate.start(migration_filename, kettle_shared);
 
         } catch (Exception ex) {
             ex.printStackTrace();

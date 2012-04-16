@@ -171,8 +171,11 @@ public class Migrate {
 
 	public static StepMeta findTarget(TransMeta transMeta) {
 		List<StepMeta> hopsteps = transMeta.getTransHopSteps(false);
-		for (Iterator it = hopsteps.iterator(); it.hasNext();) {
+		Iterator it = hopsteps.iterator();
+		while( it.hasNext()){
 			StepMeta step = (StepMeta) it.next();
+			if ( step == null )
+				continue;
 			if (step.getTypeId().equals("Dummy")) {
 				String[] names = transMeta.getNextStepNames(step);
 				if (names.length == 0) {
@@ -182,6 +185,7 @@ public class Migrate {
 		}
 		return null;
 	}
+	
 
 	public static TransMeta makeTrans(String source, String target,
 			List<String> filename) throws Exception {
@@ -214,7 +218,8 @@ public class Migrate {
 		List<String> fromFields = getPreviousFields(transMeta, fromStep);
 		String[] selectFields = getTargetFields(fromFields, target);
 		x += xoffset;
-
+		
+		System.out.println( "*************************:   "+filename );
 		// LOAD TRANS NODE
 		if (filename != null) {
 			List<StepMeta> join = new ArrayList<StepMeta>();
@@ -311,6 +316,9 @@ public class Migrate {
 			fileOutput.setOutputFields(tf);
 
 		} else {
+			if( ! dependencies.isEmpty()){
+				System.out.println( dependencies);
+			}
 			System.out.println("0:" + transMeta.getStep(0).getName());
 			System.out.println("1:" + transMeta.getStep(1).getName());
 
@@ -319,6 +327,9 @@ public class Migrate {
 			transMeta.addTransHop(ifs);
 
 			StepMeta output_connect_step = findTarget(transMeta);
+			if( output_connect_step == null)
+				return transMeta;
+			
 			TransHopMeta ofs = new TransHopMeta(output_connect_step, selectStep);
 			transMeta.addTransHop(ofs);
 			TransHopMeta st = new TransHopMeta(selectStep, toStep);
@@ -334,7 +345,6 @@ public class Migrate {
 
 			tf = getFileFields(transMeta, output_connect_step, target);
 			fileOutput.setOutputFields(tf);
-
 		}
 
 		String[] f = new String[tf.length];
@@ -355,10 +365,10 @@ public class Migrate {
 
 	}
 
-	public static void init() throws KettleException {
+	public static void init( String kettle_shared) throws KettleException {
 		KettleEnvironment.init();
 
-		shared = new SharedObjects("/home/angel/.kettle/shared.xml");
+		shared = new SharedObjects(kettle_shared);
 
 		transMeta2 = new TransMeta();
 		transMeta2.setName("trans");
@@ -371,8 +381,8 @@ public class Migrate {
 		trans = new Trans(transMeta2);
 
 		// Database uses
-		sourceDb = transMeta2.findDatabase("v5");
-		targetDb = transMeta2.findDatabase("v6");
+		sourceDb = transMeta2.findDatabase("source");
+		targetDb = transMeta2.findDatabase("target");
 		upload += "BEGIN TRANSACTION;\n\n";
 		upload += "SET CONSTRAINTS ALL DEFERRED; \n\n";
 
@@ -393,36 +403,113 @@ public class Migrate {
 		}
 	}
 
-	public static void readConfig() throws Exception {
+	public static void readConfig( String filename ) throws Exception {
 
 		ObjectMapper mapper = new ObjectMapper();
-		Map<String, HashMap> mp = mapper.readValue(new File("migrate.json"),
+		Map<String, HashMap> mp = mapper.readValue(new File( filename ),
 				Map.class);
 
-		Iterator it = mp.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pairs = (Map.Entry) it.next();
-			HashMap h = (HashMap) pairs.getValue();
-			if ((Boolean) h.get("migrate") != false) {
-				List<String> tranFile = (List<String>) h.get("transformation");
-				System.out.println(pairs.getKey() + " = " + pairs.getValue());
-				if (h.containsKey("delete")
-						&& (Boolean) h.get("delete") == true) {
-					upload += "DELETE FROM " + (String) pairs.getKey()
-							+ ";\n\n";
+		List<TransMeta> executed = new ArrayList<TransMeta>();
+
+		List<String> transformationOrder = (List<String>) mp.get("transformation_order");
+		Iterator orderIt = transformationOrder.iterator();
+		while( orderIt.hasNext()){
+			String transformation = (String) orderIt.next();
+			System.out.println( transformation );
+			HashMap h = (HashMap) mp.get(transformation);
+			List<String> tranFile = (List<String>) h.get("transformation");
+			List<String> executeFile = (List<String>) h.get("execute");
+			TransMeta transMeta;
+			if( executeFile == null || executeFile.isEmpty())
+				transMeta = Migrate.makeTrans( transformation, transformation, tranFile );
+			
+			else{
+				for (Iterator<String> it = executeFile.iterator(); it.hasNext();) {
+					String file = (String) it.next();
+					TransMeta read = new TransMeta(file);
+					
+					if ( executed.contains(read) )
+						continue;
+					Trans t2 = new Trans(read);
+					transList.add(t2);
+					transMetaMap.put(read, t2);
+					
+					t2.execute(null);
+					t2.waitUntilFinished();			
+					executed.add( read );
+
 				}
-				TransMeta transMeta = Migrate.makeTrans(
-						(String) pairs.getKey(), (String) pairs.getKey(),
-						tranFile);
-
-				Trans t = new Trans(transMeta);
-				transList.add(t);
-				transMetaMap.put(transMeta, t);
-
+				continue;
 			}
-
+			if ( executed.contains(transMeta) )
+				continue;
+			Trans t = new Trans(transMeta);
+			transList.add(t);
+			transMetaMap.put(transMeta, t);
+			
+			t.execute(null);
+			t.waitUntilFinished();			
+			executed.add( transMeta );
+	
 		}
+		
+//		Iterator it = mp.entrySet().iterator();
+//		while (it.hasNext()) {
+//			Map.Entry pairs = (Map.Entry) it.next();
+//			HashMap h = (HashMap) pairs.getValue();
+//			if ((Boolean) h.get("migrate") != false) {
+//				List<String> tranFile = (List<String>) h.get("transformation");
+//				System.out.println(pairs.getKey() + " = " + pairs.getValue());
+//				if (h.containsKey("delete")
+//						&& (Boolean) h.get("delete") == true) {
+//					upload += "DELETE FROM " + (String) pairs.getKey()
+//							+ ";\n\n";
+//				}
+//				TransMeta transMeta = Migrate.makeTrans(
+//						(String) pairs.getKey(), (String) pairs.getKey(),
+//						tranFile);
+//
+//				Trans t = new Trans(transMeta);
+//				transList.add(t);
+//				transMetaMap.put(transMeta, t);
+//
+//			}
+//
+//		}
 	}
+
+//	public static void readConfig2( String filename ) throws Exception {
+//
+//		ObjectMapper mapper = new ObjectMapper();
+//		Map<String, HashMap> mp = mapper.readValue(new File( filename ),
+//				Map.class);
+//
+//
+//		Iterator it = mp.entrySet().iterator();
+//		while (it.hasNext()) {
+//			Map.Entry pairs = (Map.Entry) it.next();
+//			HashMap h = (HashMap) pairs.getValue();
+//			if ((Boolean) h.get("migrate") != false) {
+//				List<String> tranFile = (List<String>) h.get("transformation");
+//				System.out.println(pairs.getKey() + " = " + pairs.getValue());
+//				if (h.containsKey("delete")
+//						&& (Boolean) h.get("delete") == true) {
+//					upload += "DELETE FROM " + (String) pairs.getKey()
+//							+ ";\n\n";
+//				}
+//				if( )
+//				TransMeta transMeta = Migrate.makeTrans(
+//						(String) pairs.getKey(), (String) pairs.getKey(),
+//						tranFile);
+//
+//				Trans t = new Trans(transMeta);
+//				transList.add(t);
+//				transMetaMap.put(transMeta, t);
+//
+//			}
+//
+//		}
+//	}
 
 	public static List<TransMeta> executeTrans(TransMeta tm, List<TransMeta> executed) throws Exception  {
 
@@ -447,23 +534,23 @@ public class Migrate {
 		return executed;
 	}
 
-	public static void start() throws Exception {
+	public static void start( String migration_filename, String kettle_shared ) throws Exception {
 
-		Migrate.init();
-		Migrate.readConfig();
+		Migrate.init(kettle_shared);
+		Migrate.readConfig(migration_filename);
 
 		Migrate.writeFile();
 
-		Iterator<Trans> it = transList.iterator();
-		List<TransMeta> executed = new ArrayList<TransMeta>();
-		while (it.hasNext()) {
-			Trans t = it.next();
-			TransMeta tm = (TransMeta) t.getTransMeta();
-			if ( executed.contains(tm ))
-				continue;
-			executed = executeTrans( tm, executed );
-
-		}
+//		Iterator<Trans> it = transList.iterator();
+//		List<TransMeta> executed = new ArrayList<TransMeta>();
+//		while (it.hasNext()) {
+//			Trans t = it.next();
+//			TransMeta tm = (TransMeta) t.getTransMeta();
+//			if ( executed.contains(tm ))
+//				continue;
+//			executed = executeTrans( tm, executed );
+//
+//		}
 
 		System.out.println("FINISH");
 

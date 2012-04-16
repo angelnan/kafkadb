@@ -37,6 +37,8 @@ import glob
 import ConfigParser
 import optparse
 import sys
+import config
+
 
 
 class Settings(dict):
@@ -48,10 +50,11 @@ def parse_arguments(arguments):
     parser = optparse.OptionParser(usage='kafkadb.py [options]')
     parser.add_option('', '--get-model', dest='model', help='Returns Model Name given a table')
     parser.add_option('', '--get-model-field', dest='field', help='Returns Model given a Field and Table')
-    parser.add_option('', '--gen-file', dest='migrate', help='Generate Migration File')
+    parser.add_option('', '--migrate-module', dest='module', help='Generate Migration File for Module... Default: All')
     parser.add_option('', '--set-deferred', dest='deferred', help='Makes deferreble target database constraints')
     parser.add_option('', '--set-undeferred', dest='undeferred', help='Makes undeferreble target database constraints')
-        
+    parser.add_option('', '--make-config', dest='make', help='Generats config file to migrate system')
+         
     (option, arguments) = parser.parse_args(arguments)
     # Remove first argument because it's application name
     arguments.pop(0)
@@ -68,10 +71,10 @@ def parse_arguments(arguments):
     else:
         settings.field=False
     
-    if option.migrate:
-        settings.migrate=option.migrate
+    if option.module:
+        settings.module=option.module
     else:
-        settings.migrate=False
+        settings.module=False
     
     if option.deferred:
         settings.deferred=True
@@ -83,6 +86,10 @@ def parse_arguments(arguments):
     else:
         settings.undeferred=False
 
+    settings.make = False
+    if option.make:
+        settings.make=True
+        
     return settings
 
 def getFields( cursor ):
@@ -109,10 +116,13 @@ def getFields( cursor ):
     source = {}
     cursor.execute( query )
     for field,ftype,table in cursor.fetchall():
-        if not source.get( table ):
-            source[table] = {'hash':[]}
-        source[table][field]=ftype
-        source[table]['hash'].append( (field,ftype ) )
+        model = getModel( cursor, table, field )
+        if not source.get(model):
+            source[model] = {}
+        if not source[model].get(table):
+            source[model][table] = {'hash':[]}
+        source[model][table][field]=ftype
+        source[model][table]['hash'].append( (field,ftype ) )
     return source.copy()
 
 
@@ -180,82 +190,151 @@ def getTransformations( path='model-ktr'):
         ktr[table] = ktr.get(table,[]) + [file]
     
     return ktr
+   
+def getModuleDiff(source, target):
     
-def getConfig( source, target ):
-
-    sFields = getFields( source )
-    tFields = getFields( target )
-
-    tables = list( set(sFields.keys() + tFields.keys() ) )
-    result ={}.fromkeys( tables )
+    tables = list(set(source.keys() + target.keys()))
+    result = {}.fromkeys(tables)
     
-    ktr = getTransformations()
-
-
     for table in tables:
-        print "table:",table
-        #TODO: avoid this step
+        print "******* Table ******"
+        result[table] = {
+            'migrate':False,
+            'transformation': ktr.get(table, None),
+            'depends':False
+            }
 
-        result[table]={ 
-                        #'source':[],
-                        #'target':[],
-                        'migrate':False,
-                        'transformation': ktr.get( table, [] )
-                       }
-        shash=[]
-        thash=[]
-        if False:
-            if tFields.get( table ) and sFields.get( table ):
-                shash=sFields[table]['hash']
-                thash=tFields[table]['hash']
+        if table in source and table in target:
+            print "both"
+            result[table]['on'] = 'both'
+            if config.json_verbose:
+                shash=source[table]['hash']
+                thash=target[table]['hash']
                 if shash == thash:
                     continue
-                result[table]['migrate']=True
+                result[table]['migrate']=False
                 result[table]['source'] =[x[0] for x in list(set(shash)-set(thash))]
                 result[table]['target'] =[x[0] for x in list(set(thash)-set(shash))]
-                result[table]['transformation']= ktr.get(table)
-                result[table]['delete'] = False;
+                result[table]['delete'] = False
+
+        elif table in source and not table in target:
+            print "source"
+            result[table]['on'] = 'source'
+        else:
+            print "target"
+            result[table]['on'] = 'target'
+    return result.copy()
         
-            elif sFields.get( table ):
-                shash=sFields[table]['hash']
-                result[table]['source']= [x[0] for x in shash ]
-                result[table]['transformation']= ktr.get(table)
+def getConfig( source, target, migrate_module ):
+
+    source_modules = getFields( source )        
+    target_modules = getFields( target )
         
-            else:
-                thash=tFields[table]['hash']
-                result[table]['target'] = [x[0] for x in thash]
-                result[table]['transformation']= ktr.get(table)
-                
+    modules = list(set(source_modules.keys() + \
+                target_modules.keys()))
+    if migrate_module:
+        if not migrate_module in modules:
+            raise "No module in source or target"
+        modules = [ migrate_module ]
+        
+    #print "module", modules                
+    result = {}.fromkeys( modules )
+    for module in modules:
+        result[module] = {}
+        if module != 'base':
+            continue
+        
+        if module in source_modules and \
+            module in target_modules:    
+            result[module] = getModuleDiff(source_modules[module],
+                        target_modules[module])
+        elif module in source_modules:
+            result[module] = getModuleDiff(source_modules[module],{})
+        else:
+            result[module] = getModuleDiff({},target_modules[module])
+ 
+        path = os.path.join(config.transformation_path, module)
+        file_name = '%s.json' % module        
+        writeConfigFile( result[module], file_name )          
     return result
 
 def writeConfigFile( config, filename='basic.json'):
 
-    with open(filename, mode='w') as f:
-        json.dump( config , f, indent=4)
+    with open(filename, mode='w+') as f:
+        json.dump( config , f, indent=8)
 
     f.close()
 
 
-def migrate( source, target,  filename ):
+def migrate( source, target,  module ):
+    config = getConfig( source, target, module )
+ #   writeConfigFile( config, filename )
+
+def make_dependencies( data ):
+    dependencies = []
+    trans = data.copy()
+    while trans:
+        table,table_data = trans.popitem()
+        print "table:",table
+        for depend in table_data['depends'] or []:
+            print "depend:",depend
+            if depend in dependencies:
+                continue
+            index = dependencies.index(depend)
+            dependencies.insert(index, depend)
+        
+        if not table in dependencies:
+            dependencies.append(table)        
+    return dependencies
     
-    config = getConfig( source, target )
-    writeConfigFile( config, filename )
+        
+def make_config_file( filename ):
     
-    
+    file_list = getFiles()
+    result = {}
+    config_file_list = set([ x for x in file_list if '.json' in x])
+    for config_file in config_file_list:
+        print config_file
+        f = open(config_file,'r')
+        json_data = json.loads( f.read())
+        f.close()
+        for table,table_data in json_data.iteritems():
+            if table in result:
+                result[table]['transformation'] += table_data['transformation']
+                result[table]['depends'] += table_data['depends'] 
+                result[table]['execute'] += table_data['execute']
+                continue
+            if not table_data.get('migrate'):
+                continue
+            result[table] = table_data.copy()  
+     
+    dependencies = make_dependencies(result)
+    result['transformation_order'] = dependencies
+    writeConfigFile( result, 'migration.json')
+            
+            
 if __name__ == '__main__':
     
     settings = parse_arguments( sys.argv )
 
     # Config
-    source_db  = psycopg2.connect('dbname=v5', 'host=localhost','user=angel')
-    target_db  = psycopg2.connect('dbname=v6' ,'host=localhost','user=angel')
-    path = 'model-ktr/'
+    source_db  = psycopg2.connect(
+        'dbname=%s' % config.source_db,
+        'host=%s' % config.source_host_db,
+        'user=%s' % config.source_user_db)
+    target_db  = psycopg2.connect(
+        'dbname=%s' % config.target_db ,
+        'host=%s' % config.target_host_db,
+        'user=%s' % config.target_user_db)
+        
+    path = config.transformation_path
     
     settings = parse_arguments( sys.argv )
 
     sourceCR = source_db.cursor()
     targetCR = target_db.cursor()   
 
+    ktr = getTransformations()
     
     if settings.model:
         model = getModel( targetCR, settings.model )
@@ -271,9 +350,11 @@ if __name__ == '__main__':
     if settings.deferred:
         updateConstraints( targetCR, settings.undeferred )
         
-    if settings.migrate:
-        migrate( sourceCR, targetCR, settings.migrate )
+    if settings.module:
+        migrate( sourceCR, targetCR, settings.module )
    
+    if settings.make:
+        make_config_file('migrate.json')
     source_db.close()
     target_db.close()
     
