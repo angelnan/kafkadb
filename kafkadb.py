@@ -38,6 +38,7 @@ import ConfigParser
 import optparse
 import sys
 import config
+import subprocess
 
 
 
@@ -54,6 +55,7 @@ def parse_arguments(arguments):
     parser.add_option('', '--set-deferred', dest='deferred', help='Makes deferreble target database constraints')
     parser.add_option('', '--set-undeferred', dest='undeferred', help='Makes undeferreble target database constraints')
     parser.add_option('', '--make-config', dest='make', help='Generats config file to migrate system')
+    parser.add_option('', '--migrate', dest='migrate', help='Process execute migration')
          
     (option, arguments) = parser.parse_args(arguments)
     # Remove first argument because it's application name
@@ -90,6 +92,9 @@ def parse_arguments(arguments):
     if option.make:
         settings.make=True
         
+    settings.migrate = False
+    if option.migrate:
+        settings.migrate = True
     return settings
 
 def getFields( cursor ):
@@ -293,6 +298,7 @@ def make_config_file( filename ):
     file_list = getFiles()
     result = {}
     config_file_list = set([ x for x in file_list if '.json' in x])
+    delete_string = []
     for config_file in config_file_list:
         print config_file
         f = open(config_file,'r')
@@ -306,12 +312,49 @@ def make_config_file( filename ):
                 continue
             if not table_data.get('migrate'):
                 continue
-            result[table] = table_data.copy()  
-     
+            result[table] = table_data.copy()
+            
+            if table_data.get('delete'):
+                delete_string.append("DELETE FROM %s \n" % table)
+              
+    f = open( config.output_prepare_file, 'w')
+    f.write( "\n".join(delte_string))
+    f.close() 
     dependencies = make_dependencies(result)
     result['transformation_order'] = dependencies
     writeConfigFile( result, 'migration.json')
             
+def migrate(targetCR):
+    
+    #Execute java process
+    
+    subprocess.call(["java","-jar", "kafkadb.jar", "migration.json"])
+    
+    #Read prepare strings
+    f = open( config.prepare_file)
+    prepare_sql = f.read()
+    f.close()
+    
+    #Read copy generated file
+    f = open(config.output_copy_file)
+    copy_sql = f.read()
+    f.close()
+    
+    #Set constraints as deferred
+    updateConstraints( targetCR, True )
+    
+    #targetCR.execute("BEGIN TRANSACTION;")
+    targetCR.execute("SET CONSTRAINTS ALL DEFERRED;")
+    targetCR.execute(prepare_sql)
+    targetCR.execute(copy_sql)
+    targetCR.commit()
+    
+    
+    #Set constraints as undeferred
+    updateConstraints( targetCR, False )
+    
+    
+    
             
 if __name__ == '__main__':
     
@@ -336,6 +379,11 @@ if __name__ == '__main__':
 
     ktr = getTransformations()
     
+    if settings.migrate:
+        print "start migration"
+        model = migrate( targetCR )
+        print "end migration"
+        
     if settings.model:
         model = getModel( targetCR, settings.model )
         print "Model:%s for table name:%s"%(model,settings.model)       
@@ -347,7 +395,7 @@ if __name__ == '__main__':
     if settings.deferred:
         updateConstraints( targetCR, settings.deferred )
 
-    if settings.deferred:
+    if settings.undeferred:
         updateConstraints( targetCR, settings.undeferred )
         
     if settings.module:

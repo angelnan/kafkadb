@@ -12,6 +12,7 @@ target_user_db = 'angel'
 
 # Transformation repository
 transformation_path = 'model_ktr'
+migration_config = 'migration.json'
 
 # Show diferences on database fields
 json_verbose = True

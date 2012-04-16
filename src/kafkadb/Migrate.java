@@ -449,67 +449,11 @@ public class Migrate {
 			
 			t.execute(null);
 			t.waitUntilFinished();			
-			executed.add( transMeta );
+			executed.add(transMeta);
 	
 		}
 		
-//		Iterator it = mp.entrySet().iterator();
-//		while (it.hasNext()) {
-//			Map.Entry pairs = (Map.Entry) it.next();
-//			HashMap h = (HashMap) pairs.getValue();
-//			if ((Boolean) h.get("migrate") != false) {
-//				List<String> tranFile = (List<String>) h.get("transformation");
-//				System.out.println(pairs.getKey() + " = " + pairs.getValue());
-//				if (h.containsKey("delete")
-//						&& (Boolean) h.get("delete") == true) {
-//					upload += "DELETE FROM " + (String) pairs.getKey()
-//							+ ";\n\n";
-//				}
-//				TransMeta transMeta = Migrate.makeTrans(
-//						(String) pairs.getKey(), (String) pairs.getKey(),
-//						tranFile);
-//
-//				Trans t = new Trans(transMeta);
-//				transList.add(t);
-//				transMetaMap.put(transMeta, t);
-//
-//			}
-//
-//		}
 	}
-
-//	public static void readConfig2( String filename ) throws Exception {
-//
-//		ObjectMapper mapper = new ObjectMapper();
-//		Map<String, HashMap> mp = mapper.readValue(new File( filename ),
-//				Map.class);
-//
-//
-//		Iterator it = mp.entrySet().iterator();
-//		while (it.hasNext()) {
-//			Map.Entry pairs = (Map.Entry) it.next();
-//			HashMap h = (HashMap) pairs.getValue();
-//			if ((Boolean) h.get("migrate") != false) {
-//				List<String> tranFile = (List<String>) h.get("transformation");
-//				System.out.println(pairs.getKey() + " = " + pairs.getValue());
-//				if (h.containsKey("delete")
-//						&& (Boolean) h.get("delete") == true) {
-//					upload += "DELETE FROM " + (String) pairs.getKey()
-//							+ ";\n\n";
-//				}
-//				if( )
-//				TransMeta transMeta = Migrate.makeTrans(
-//						(String) pairs.getKey(), (String) pairs.getKey(),
-//						tranFile);
-//
-//				Trans t = new Trans(transMeta);
-//				transList.add(t);
-//				transMetaMap.put(transMeta, t);
-//
-//			}
-//
-//		}
-//	}
 
 	public static List<TransMeta> executeTrans(TransMeta tm, List<TransMeta> executed) throws Exception  {
 
@@ -538,20 +482,7 @@ public class Migrate {
 
 		Migrate.init(kettle_shared);
 		Migrate.readConfig(migration_filename);
-
 		Migrate.writeFile();
-
-//		Iterator<Trans> it = transList.iterator();
-//		List<TransMeta> executed = new ArrayList<TransMeta>();
-//		while (it.hasNext()) {
-//			Trans t = it.next();
-//			TransMeta tm = (TransMeta) t.getTransMeta();
-//			if ( executed.contains(tm ))
-//				continue;
-//			executed = executeTrans( tm, executed );
-//
-//		}
-
 		System.out.println("FINISH");
 
 	}
