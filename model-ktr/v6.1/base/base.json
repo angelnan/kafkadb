@@ -1,0 +1,902 @@
+{
+        "base_update_translations": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "base_language_install": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "base_language_export": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_act_report_custom": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_partner_category": {
+                "on": "both", 
+                "target": [
+                        "parent_left", 
+                        "parent_right"
+                ], 
+                "migrate": false, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_request": {
+                "on": "both", 
+                "target": [
+                        "state", 
+                        "priority"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "priority", 
+                        "state"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "publisher_warranty_contract_wizard": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "maintenance_contract_module": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "publisher_warranty_contract": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_report_custom_fields": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_act_report_xml": {
+                "on": "both", 
+                "target": [
+                        "report_file", 
+                        "report_type"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "report_type"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_payterm": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_actions_configuration_wizard": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_company": {
+                "on": "both", 
+                "target": [
+                        "rml_header3", 
+                        "company_registry", 
+                        "account_no", 
+                        "name", 
+                        "paper_format"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "name", 
+                        "rml_footer2"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "wkf_instance": {
+                "on": "both", 
+                "target": [], 
+                "migrate": false, 
+                "source": [
+                        "uid"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_actions": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_request_history": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_widget": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_partner_canal": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "wizard_ir_model_menu_create": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_attachment": {
+                "on": "both", 
+                "target": [
+                        "company_id", 
+                        "name", 
+                        "res_name", 
+                        "type", 
+                        "datas_fname", 
+                        "url"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "datas_fname", 
+                        "name", 
+                        "link"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_model": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_model_access": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_partner": {
+                "_comment": "CHECK 2012-04-21",
+                "on": "both", 
+                "target": [
+                        "color", 
+                        "company_id", 
+                        "employee", 
+                        "lang", 
+                        "title"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "lang", 
+                        "title"
+                ], 
+                "depends":  ["res_partner_title"], 
+                "transformation": [
+                        "model-ktr/v6.1/base/res_partner.ktr"
+                ], 
+                "delete": true
+        }, 
+        "base_module_upgrade": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_actions_todo_category": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_request_link": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_actions_todo": {
+                "on": "both", 
+                "target": [
+                        "state", 
+                        "category_id", 
+                        "type"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "active", 
+                        "type", 
+                        "start_date", 
+                        "start_on", 
+                        "end_date", 
+                        "state"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_partner_function": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_rule_group": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_country_state": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_partner_title": {
+                "_comment": "CHECK 2012-04-21",
+                "migrate": true, 
+                "on": "both", 
+                "depends": false, 
+                "execute": [],
+                "transformation": [
+                    "model-ktr/v6.1/base/res_partner_title.ktr"
+                ],
+                "delete":true
+        }, 
+        "ir_sequence_type": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_module_repository": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_partner_bank": {
+                "on": "both", 
+                "target": [
+                        "bank_bic", 
+                        "state", 
+                        "name", 
+                        "company_id", 
+                        "owner_name", 
+                        "footer", 
+                        "bank_name"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "owner_name", 
+                        "state", 
+                        "name"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "base_module_update": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_currency": {
+                "on": "both", 
+                "target": [
+                        "rounding", 
+                        "base", 
+                        "company_id", 
+                        "position", 
+                        "date", 
+                        "symbol"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "code", 
+                        "rounding"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "wkf_workitem": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_report_custom": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_ui_view_custom": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_act_wizard": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "partner_sms_send": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_model_config": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_values": {
+                "on": "both", 
+                "target": [], 
+                "migrate": false, 
+                "source": [
+                        "meta", 
+                        "object"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_lang": {
+                "on": "both", 
+                "target": [
+                        "direction", 
+                        "iso_code", 
+                        "code"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "direction", 
+                        "code"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_country": {
+                "on": "both", 
+                "target": [
+                        "address_format"
+                ], 
+                "migrate": false, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_groups": {
+                "on": "both", 
+                "target": [
+                        "category_id"
+                ], 
+                "migrate": false, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "base_language_import": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_currency_rate_type": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "base_module_import": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_partner_address": {
+                "_comment": "CHECK 2012-04-21",
+                "on": "both", 
+                "target": [
+                        "color", 
+                        "company_id", 
+                        "title", 
+                        "function", 
+                        "type"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "function", 
+                        "title", 
+                        "type"
+                ], 
+                "depends": ["res_partner_title"], 
+                "transformation": [
+                        "model-ktr/v6.1/base/res_partner_address.ktr"
+                ], 
+                "delete": true
+        }, 
+        "wkf_activity": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_ui_view_sc": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_ui_view": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_exports_line": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_filters": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_widget_wizard": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "wizard_ir_model_menu_create_line": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_module_category": {
+                "on": "both", 
+                "target": [
+                        "description", 
+                        "visible", 
+                        "sequence"
+                ], 
+                "migrate": false, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "wkf": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_partner_event": {
+                "on": "both", 
+                "target": [], 
+                "migrate": false, 
+                "source": [
+                        "event_ical_id", 
+                        "type", 
+                        "document", 
+                        "som", 
+                        "partner_type", 
+                        "planned_revenue", 
+                        "canal_id", 
+                        "probability", 
+                        "planned_cost"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_currency_rate": {
+                "on": "both", 
+                "target": [
+                        "currency_rate_type_id", 
+                        "rate"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "rate"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_server_object_lines": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "wkf_triggers": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_property": {
+                "on": "both", 
+                "target": [
+                        "value_reference", 
+                        "value_float", 
+                        "value_binary", 
+                        "value_integer", 
+                        "value_text", 
+                        "type", 
+                        "value_datetime"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "value"
+                ], 
+                "depends": false, 
+                "transformation": [
+                        "model-ktr/v6.1/base/ir_property.ktr"
+                ], 
+                "delete": false
+        }, 
+        "maintenance_contract": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_roles": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_cron": {
+                "on": "both", 
+                "target": [
+                        "interval_type"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "interval_type"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_rule": {
+                "on": "both", 
+                "target": [
+                        "perm_unlink", 
+                        "perm_write", 
+                        "domain_force", 
+                        "model_id", 
+                        "perm_read", 
+                        "name", 
+                        "perm_create", 
+                        "global"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "field_id", 
+                        "operator", 
+                        "rule_group", 
+                        "domain_force", 
+                        "operand"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_partner_bank_type_field": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_default": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "multi_company_default": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_bank": {
+                "on": "both", 
+                "target": [
+                        "bic"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "code", 
+                        "bic"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_users": {
+                "on": "both", 
+                "target": [
+                        "id", 
+                        "date", 
+                        "user_email", 
+                        "menu_tips"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "address_id"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_ui_menu": {
+                "on": "both", 
+                "target": [
+                        "web_icon_data", 
+                        "web_icon_hover_data", 
+                        "web_icon", 
+                        "web_icon_hover"
+                ], 
+                "migrate": false, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_act_url": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_mail_server": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_partner_bank_type": {
+                "on": "both", 
+                "target": [
+                        "format_layout"
+                ], 
+                "migrate": false, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_partner_som": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_model_fields": {
+                "on": "both", 
+                "target": [
+                        "serialization_field_id", 
+                        "selectable", 
+                        "on_delete"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "on_delete"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_model_data": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "wkf_transition": {
+                "on": "both", 
+                "target": [
+                        "group_id"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "role_id"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "partner_massmail_wizard": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_act_window_view": {
+                "on": "both", 
+                "target": [
+                        "view_mode"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "view_mode"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_partner_event_type": {
+                "migrate": false, 
+                "on": "source", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_act_window": {
+                "on": "both", 
+                "target": [
+                        "help", 
+                        "multi", 
+                        "target", 
+                        "auto_search", 
+                        "search_view_id", 
+                        "filter"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "target"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_module_module": {
+                "on": "both", 
+                "target": [
+                        "complexity", 
+                        "contributors", 
+                        "application", 
+                        "license", 
+                        "sequence", 
+                        "maintainer", 
+                        "icon", 
+                        "auto_install"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "license"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_module_module_dependency": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_sequence": {
+                "on": "both", 
+                "target": [
+                        "company_id", 
+                        "implementation"
+                ], 
+                "migrate": false, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "res_widget_user": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "res_log": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_config_parameter": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_translation": {
+                "on": "both", 
+                "target": [
+                        "lang"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "lang"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }, 
+        "ir_act_client": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_exports": {
+                "migrate": false, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null
+        }, 
+        "ir_act_server": {
+                "on": "both", 
+                "target": [
+                        "copy_object"
+                ], 
+                "migrate": false, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": false
+        }
+}

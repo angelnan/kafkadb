@@ -168,7 +168,7 @@ def getModel( cursor, tableName=None, fieldName=None):
     return model
 
 def updateConstraints( cursor, deferred ):
-    cursor.execute("UPDATE pg_trigger set tderreble = %s"%deferred )
+    cursor.execute("UPDATE pg_trigger set tgdeferrable = %s"%deferred )
     cursor.execute("UPDATE pg_constraint set condeferrable=%s"%deferred)
     
     
@@ -271,7 +271,7 @@ def writeConfigFile( config, filename='basic.json'):
     f.close()
 
 
-def migrate( source, target,  module ):
+def migrate_module( source, target,  module ):
     config = getConfig( source, target, module )
  #   writeConfigFile( config, filename )
 
@@ -299,6 +299,8 @@ def make_config_file( filename ):
     result = {}
     config_file_list = set([ x for x in file_list if '.json' in x])
     delete_string = []
+    disable_string = []
+    enable_string = []
     for config_file in config_file_list:
         print config_file
         f = open(config_file,'r')
@@ -315,42 +317,82 @@ def make_config_file( filename ):
             result[table] = table_data.copy()
             
             if table_data.get('delete'):
-                delete_string.append("DELETE FROM %s \n" % table)
-              
+                delete_string.append("DELETE FROM %s; \n" % table)
+                
+            disable_string.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % table)
+            enable_string.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % table)
+            
+    # DELETE TABLE DATA BEFORE INSERT
+    # DISABLE TRIGGERS
     f = open( config.output_prepare_file, 'w')
-    f.write( "\n".join(delte_string))
-    f.close() 
+    f.write( "\n".join(disable_string))
+    f.write( "\n".join(delete_string))
+    f.close()
+    
+    
+    # ENABLE TRIGGERS AGAIN
+    f = open( config.output_finish_file, 'w')
+    f.write( "\n".join(enable_string))
+    f.close()
+    
     dependencies = make_dependencies(result)
     result['transformation_order'] = dependencies
     writeConfigFile( result, 'migration.json')
+    
+    
             
 def migrate(targetCR):
     
     #Execute java process
     
-    subprocess.call(["java","-jar", "kafkadb.jar", "migration.json"])
+    print "START...."
+    subprocess.call(["java","-jar", "kafkadb.jar", "migration.json"])        
+    print "Kettle transformation process finish"
+    
     
     #Read prepare strings
-    f = open( config.prepare_file)
+    print "Reading PREPARE file..."
+    f = open( config.output_prepare_file)
     prepare_sql = f.read()
     f.close()
     
     #Read copy generated file
+    print "Reading COPY file"
     f = open(config.output_copy_file)
     copy_sql = f.read()
     f.close()
     
+    #Read copy generated file
+    print "Reading Finish file"
+    f = open(config.output_finish_file)
+    finish_sql = f.read()
+    f.close()
+    
     #Set constraints as deferred
+    print "Updating constraints...."
     updateConstraints( targetCR, True )
     
     #targetCR.execute("BEGIN TRANSACTION;")
+    print "Upload Data start..."
     targetCR.execute("SET CONSTRAINTS ALL DEFERRED;")
-    targetCR.execute(prepare_sql)
-    targetCR.execute(copy_sql)
-    targetCR.commit()
+    if prepare_sql:
+        print "Prepare Statements.."
+        print prepare_sql
+        targetCR.execute(prepare_sql)
+        
+    print "upload finish, comitting..."
+    print copy_sql
+    targetCR.execute( copy_sql )
+    
+    print "enable triggers again"
+    print finish_sql
+    targetCR.execute( finish_sql )
+    target_db.commit()
+    print "upload data FINISH"
     
     
     #Set constraints as undeferred
+    print "Restoring Constraints"
     updateConstraints( targetCR, False )
     
     
@@ -369,6 +411,8 @@ if __name__ == '__main__':
         'dbname=%s' % config.target_db ,
         'host=%s' % config.target_host_db,
         'user=%s' % config.target_user_db)
+    
+    target_db.set_session(deferrable=True)
         
     path = config.transformation_path
     
@@ -399,7 +443,7 @@ if __name__ == '__main__':
         updateConstraints( targetCR, settings.undeferred )
         
     if settings.module:
-        migrate( sourceCR, targetCR, settings.module )
+        migrate_module( sourceCR, targetCR, settings.module )
    
     if settings.make:
         make_config_file('migrate.json')

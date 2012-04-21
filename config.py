@@ -21,3 +21,4 @@ json_verbose = True
 output_data_files = '/tmp/output'
 output_copy_file = '/tmp/output_copy.sql'
 output_prepare_file = '/tmp/output_prepare_file.sql'
+output_finish_file = '/tmp/output_finosh_file.sql'
