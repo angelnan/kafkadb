@@ -114,7 +114,7 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>source</database>
+    <database>guinama_111212</database>
     <port>5432</port>
     <username>angel</username>
     <password>Encrypted </password>
@@ -198,7 +198,7 @@
     </attributes>
   </connection>
   <order>
-  <hop> <from>id</from><to>default</to><enabled>Y</enabled> </hop>  <hop> <from>default</from><to>aux_res_partner_title</to><enabled>Y</enabled> </hop>  <hop> <from>title_source</from><to>id</to><enabled>Y</enabled> </hop>  <hop> <from>default</from><to>target</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Copy Statement</from><to>Text file output 2</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>id</from><to>default</to><enabled>Y</enabled> </hop>  <hop> <from>default</from><to>aux_res_partner_title</to><enabled>Y</enabled> </hop>  <hop> <from>title_source</from><to>id</to><enabled>Y</enabled> </hop>  <hop> <from>default</from><to>target</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Copy Statement</from><to>Text file output 2</to><enabled>N</enabled> </hop>  </order>
   <step>
     <name>Generate Copy Statement</name>
     <type>RowGenerator</type>
@@ -330,7 +330,7 @@
       <add_time>N</add_time>
       <SpecifyFormat>N</SpecifyFormat>
       <date_time_format/>
-      <add_to_result_filenames>Y</add_to_result_filenames>
+      <add_to_result_filenames>N</add_to_result_filenames>
       <pad>N</pad>
       <fast_dump>N</fast_dump>
       <splitevery>0</splitevery>

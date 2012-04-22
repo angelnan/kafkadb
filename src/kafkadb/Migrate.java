@@ -111,17 +111,17 @@ public class Migrate {
 	    String targetTable) throws Exception {
 	// Get fields from table output.
 
-	log.info("Getting target Fields from table: " + targetTable);
+//	log.info("Getting target Fields from table: " + targetTable);
 
 	Database targetDatabase = new Database(targetDb);
 	targetDatabase.connect();
 
-	log.info("after connect");
+//	log.info("after connect");
 
 	String[] targetFields = targetDatabase.getQueryFields(
 		"select * from " + targetTable, true).getFieldNames();
 
-	log.info("Target fields:" + targetFields.toString());
+//	log.info("Target fields:" + targetFields.toString());
 
 	List<String> selectFields = new ArrayList<String>();
 	for (int i = 0; i < targetFields.length; i++) {
@@ -206,7 +206,7 @@ public class Migrate {
 	transMeta.setName(source + "_" + target);
 	transMeta.setSharedObjects(shared);
 	transMeta.readSharedObjects();
-	transMeta.setLogLevel(LogLevel.ROWLEVEL);
+//	transMeta.setLogLevel(LogLevel.ROWLEVEL);
 	transMeta.setUsingUniqueConnections(true);
 
 	transMap.put(target, transMeta);
@@ -219,7 +219,7 @@ public class Migrate {
 	String selectSQL = "SELECT * FROM " + source;
 	tii.setSQL(selectSQL);
 
-	log.info("Input Query SQL:" + selectSQL);
+//	log.info("Input Query SQL:" + selectSQL);
 
 	// Source step.
 	StepMeta fromStep = new StepMeta("table_source_" + source,
@@ -229,8 +229,8 @@ public class Migrate {
 
 	List<String> fromFields = getPreviousFields(transMeta, fromStep);
 
-	log.info("Previous fields:" + fromFields.toString());
-	log.info("Get target fields table:" + target);
+//	log.info("Previous fields:" + fromFields.toString());
+//	log.info("Get target fields table:" + target);
 
 	String[] selectFields = getTargetFields(fromFields, target);
 
@@ -251,12 +251,12 @@ public class Migrate {
 		    StepMeta sp = it2.next();
 		    sp.setName(transMeta.getAlternativeStepname(sp.getName()));
 
-		    log.info("Step:"+ sp.getName());
+//		    log.info("Step:"+ sp.getName());
 		    
 		    if (sp.getName().contains("target"))
 			jtarget = sp;
  		    if (sp.getName().contains("source")) {
- 			log.info( sp.getStepID().toString() );
+// 			log.info( sp.getStepID().toString() );
  			if( ! sp.getStepID().toString().equals("Dummy")){
  			    fromStep = sp;
  			    continue;
@@ -274,7 +274,7 @@ public class Migrate {
 
 		for (int j = 0; j < read.nrTransHops(); j++) {
 		    TransHopMeta thm = read.getTransHop(j);
-		    log.info(  thm.getFromStep().getName() +"-" + thm.getToStep().getName() ); 
+//		    log.info(  thm.getFromStep().getName() +"-" + thm.getToStep().getName() ); 
 		    transMeta.addTransHop(thm);
 		}
 
@@ -397,7 +397,8 @@ public class Migrate {
 	transMeta2.setName("trans");
 	transMeta2.setSharedObjects(shared);
 	transMeta2.readSharedObjects();
-	transMeta2.setLogLevel(LogLevel.ROWLEVEL);
+	//transMeta2.setLogLevel(LogLevel.ROWLEVEL);
+	transMeta2.setLogLevel(LogLevel.BASIC);
 	transMeta2.setUsingUniqueConnections(true);
 
 	// Instance to Execute Trans.
@@ -406,9 +407,9 @@ public class Migrate {
 	// Database uses
 	// shared.getObjectsMap().get()
 	sourceDb = transMeta2.findDatabase("source");
-	log.info("source databse:" + sourceDb);
+//	log.info("source databse:" + sourceDb);
 	targetDb = transMeta2.findDatabase("target");
-	log.info("target databse:" + targetDb);
+//	log.info("target databse:" + targetDb);
 	// upload += "BEGIN TRANSACTION;\n\n";
 	// upload += "SET CONSTRAINTS ALL DEFERRED; \n\n";
 

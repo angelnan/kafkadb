@@ -24,31 +24,33 @@
                 "transformation": null
         }, 
         "res_partner_category": {
+                "_comment": "CHECK 2012-04-21",
                 "on": "both", 
                 "target": [
                         "parent_left", 
                         "parent_right"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [], 
                 "depends": false, 
                 "transformation": null, 
-                "delete": false
+                "delete": true
         }, 
         "res_request": {
+                "_comment": "CHECK 2012-04-21",
                 "on": "both", 
                 "target": [
                         "state", 
                         "priority"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "priority", 
                         "state"
                 ], 
                 "depends": false, 
                 "transformation": null, 
-                "delete": false
+                "delete": true
         }, 
         "publisher_warranty_contract_wizard": {
                 "migrate": false, 
@@ -89,10 +91,12 @@
                 "delete": false
         }, 
         "res_payterm": {
-                "migrate": false, 
+                "_comment": "CHECK 2012-04-21",
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": null,
+                "delete": true
         }, 
         "ir_actions_configuration_wizard": {
                 "migrate": false, 
@@ -101,6 +105,7 @@
                 "transformation": null
         }, 
         "res_company": {
+                "_comment": "CHECK 2012-04-21",
                 "on": "both", 
                 "target": [
                         "rml_header3", 
@@ -109,25 +114,27 @@
                         "name", 
                         "paper_format"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "name", 
                         "rml_footer2"
                 ], 
                 "depends": false, 
-                "transformation": null, 
-                "delete": false
+                "transformation": [
+                    "model-ktr/v6.1/base/res_company.ktr"
+                    ], 
+                "delete": true
         }, 
         "wkf_instance": {
                 "on": "both", 
                 "target": [], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "uid"
                 ], 
                 "depends": false, 
                 "transformation": null, 
-                "delete": false
+                "delete": true
         }, 
         "ir_actions": {
                 "migrate": false, 
@@ -136,10 +143,12 @@
                 "transformation": null
         }, 
         "res_request_history": {
+                "_comment": "CHECK 2012-04-21",
                 "migrate": false, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": null,
+                "delete": true
         }, 
         "res_widget": {
                 "migrate": false, 
@@ -263,10 +272,12 @@
                 "transformation": null
         }, 
         "res_country_state": {
-                "migrate": false, 
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": [
+                    "model-ktr/v6.1/base/res_country_state.ktr"
+                ]                
         }, 
         "res_partner_title": {
                 "_comment": "CHECK 2012-04-21",
@@ -302,15 +313,17 @@
                         "footer", 
                         "bank_name"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "owner_name", 
                         "state", 
                         "name"
                 ], 
                 "depends": false, 
-                "transformation": null, 
-                "delete": false
+                "transformation": [
+                    "model-ktr/v6.1/base/res_partner_bank.ktr"
+                 ],                
+                "delete": true
         }, 
         "base_module_update": {
                 "migrate": false, 
@@ -338,10 +351,11 @@
                 "delete": false
         }, 
         "wkf_workitem": {
-                "migrate": false, 
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": null,
+                "delete": true
         }, 
         "ir_report_custom": {
                 "migrate": false, 
@@ -406,10 +420,12 @@
                 "target": [
                         "address_format"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [], 
                 "depends": false, 
-                "transformation": null, 
+                "transformation": [
+                    "model-ktr/v6.1/base/res_country.ktr"
+                ],                
                 "delete": false
         }, 
         "res_groups": {
@@ -457,17 +473,18 @@
                         "title", 
                         "type"
                 ], 
-                "depends": ["res_partner_title"], 
+                "depends": ["res_partner_title","res_country","res_country_state"], 
                 "transformation": [
                         "model-ktr/v6.1/base/res_partner_address.ktr"
                 ], 
                 "delete": true
         }, 
         "wkf_activity": {
-                "migrate": false, 
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": null,
+                "delete":true
         }, 
         "ir_ui_view_sc": {
                 "migrate": false, 
@@ -482,10 +499,11 @@
                 "transformation": null
         }, 
         "ir_exports_line": {
-                "migrate": false, 
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": null,
+                "delete": true
         }, 
         "ir_filters": {
                 "migrate": false, 
@@ -519,6 +537,7 @@
                 "delete": false
         }, 
         "wkf": {
+                "_comment": "Make mapping of ids",
                 "migrate": false, 
                 "on": "both", 
                 "depends": false, 
@@ -527,7 +546,7 @@
         "res_partner_event": {
                 "on": "both", 
                 "target": [], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "event_ical_id", 
                         "type", 
@@ -541,21 +560,22 @@
                 ], 
                 "depends": false, 
                 "transformation": null, 
-                "delete": false
+                "delete": true
         }, 
         "res_currency_rate": {
+                "_comment": "make currency id mappings",
                 "on": "both", 
                 "target": [
                         "currency_rate_type_id", 
                         "rate"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "rate"
                 ], 
                 "depends": false, 
                 "transformation": null, 
-                "delete": false
+                "delete": true
         }, 
         "ir_server_object_lines": {
                 "migrate": false, 
@@ -564,10 +584,11 @@
                 "transformation": null
         }, 
         "wkf_triggers": {
-                "migrate": false, 
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": null,
+                "delete": true
         }, 
         "ir_property": {
                 "on": "both", 
@@ -580,7 +601,7 @@
                         "type", 
                         "value_datetime"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "value"
                 ], 
@@ -588,7 +609,7 @@
                 "transformation": [
                         "model-ktr/v6.1/base/ir_property.ktr"
                 ], 
-                "delete": false
+                "delete": true
         }, 
         "maintenance_contract": {
                 "migrate": false, 
@@ -640,13 +661,16 @@
                 "delete": false
         }, 
         "res_partner_bank_type_field": {
-                "migrate": false, 
+                "_comment": "CHECK 2012-04-21",
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": null,
+                "delete":true
         }, 
         "ir_default": {
-                "migrate": false, 
+                "_comment": "CHECK 2012-04-21",
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
                 "transformation": null
@@ -658,20 +682,22 @@
                 "transformation": null
         }, 
         "res_bank": {
+                "_comment": "CHECK 2012-04-21",
                 "on": "both", 
                 "target": [
                         "bic"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "code", 
                         "bic"
                 ], 
                 "depends": false, 
                 "transformation": null, 
-                "delete": false
+                "delete": true
         }, 
         "res_users": {
+                "_comment": "CHECK 2012-04-21",
                 "on": "both", 
                 "target": [
                         "id", 
@@ -679,13 +705,13 @@
                         "user_email", 
                         "menu_tips"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [
                         "address_id"
                 ], 
                 "depends": false, 
                 "transformation": null, 
-                "delete": false
+                "delete": true
         }, 
         "ir_ui_menu": {
                 "on": "both", 
@@ -714,15 +740,16 @@
                 "transformation": null
         }, 
         "res_partner_bank_type": {
+                "_comment": "CHECK 2012-04-21",
                 "on": "both", 
                 "target": [
                         "format_layout"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [], 
                 "depends": false, 
                 "transformation": null, 
-                "delete": false
+                "delete": true
         }, 
         "res_partner_som": {
                 "migrate": false, 
@@ -839,11 +866,13 @@
                         "company_id", 
                         "implementation"
                 ], 
-                "migrate": false, 
+                "migrate": true, 
                 "source": [], 
                 "depends": false, 
-                "transformation": null, 
-                "delete": false
+                "transformation": [
+                    "model-ktr/v6.1/base/ir_sequence.ktr" 
+                ], 
+                "delete": true
         }, 
         "res_widget_user": {
                 "migrate": false, 
@@ -883,10 +912,11 @@
                 "transformation": null
         }, 
         "ir_exports": {
-                "migrate": false, 
+                "migrate": true, 
                 "on": "both", 
                 "depends": false, 
-                "transformation": null
+                "transformation": null,
+                "delete":true
         }, 
         "ir_act_server": {
                 "on": "both", 
