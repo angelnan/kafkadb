@@ -1,0 +1,223 @@
+{
+        "product_price_type": {
+                "migrate": true, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_pricelist_type": {
+                "migrate": true, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_price_list": {
+                "migrate": false, 
+                "on": "target", 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "pricelist_partnerinfo": {
+                "on": "both", 
+                "target": [
+                        "price"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "price"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_uom": {
+                "on": "both", 
+                "target": [
+                        "rounding", 
+                        "factor", 
+                        "uom_type"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "factor", 
+                        "factor_inv_data", 
+                        "rounding"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_category": {
+                "on": "both", 
+                "target": [
+                        "parent_right", 
+                        "parent_left", 
+                        "type"
+                ], 
+                "migrate": true, 
+                "source": [], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_ul": {
+                "on": "both", 
+                "target": [
+                        "type"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "type"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_supplierinfo": {
+                "on": "both", 
+                "target": [
+                        "company_id", 
+                        "qty", 
+                        "min_qty"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "qty"
+                ], 
+                "depends": false, 
+                "transformation": [
+                        "model-ktr/v6.1/product/product_supplierinfo.ktr"
+                ],   
+                "delete": true
+        }, 
+        "product_pricelist": {
+                "on": "both", 
+                "target": [
+                        "company_id", 
+                        "name", 
+                        "type"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "name", 
+                        "type"
+                ], 
+                "depends": false, 
+                "transformation": [
+                        "model-ktr/v6.1/product/product_pricelist.ktr"
+                ], 
+                "delete": true
+        }, 
+        "product_pricelist_version": {
+                "on": "both", 
+                "target": [
+                        "company_id", 
+                        "name"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "name"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_pricelist_item": {
+                "on": "both", 
+                "target": [
+                        "name", 
+                        "price_max_margin", 
+                        "price_min_margin", 
+                        "company_id", 
+                        "price_surcharge", 
+                        "price_round", 
+                        "price_discount"
+                ], 
+                "migrate": false, 
+                "source": [
+                        "price_surcharge", 
+                        "price_round", 
+                        "price_min_margin", 
+                        "price_max_margin", 
+                        "price_discount", 
+                        "name"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_packaging": {
+                "on": "both", 
+                "target": [
+                        "name"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "name"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_product": {
+                "on": "both", 
+                "target": [
+                        "color", 
+                        "price_extra", 
+                        "name_template", 
+                        "product_image", 
+                        "price_margin"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "price_extra", 
+                        "price_margin"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_uom_categ": {
+                "migrate": true, 
+                "on": "both", 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }, 
+        "product_template": {
+                "on": "both", 
+                "target": [
+                        "state", 
+                        "type", 
+                        "uos_coeff", 
+                        "mes_type", 
+                        "list_price", 
+                        "supply_method", 
+                        "weight_net", 
+                        "standard_price", 
+                        "cost_method", 
+                        "procure_method", 
+                        "weight"
+                ], 
+                "migrate": true, 
+                "source": [
+                        "procure_method", 
+                        "supply_method", 
+                        "type", 
+                        "uos_coeff", 
+                        "mes_type", 
+                        "list_price", 
+                        "standard_price", 
+                        "weight", 
+                        "cost_method", 
+                        "state", 
+                        "weight_net"
+                ], 
+                "depends": false, 
+                "transformation": null, 
+                "delete": true
+        }
+}

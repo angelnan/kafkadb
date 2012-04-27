@@ -120,8 +120,10 @@ def getFields( cursor ):
     """
     source = {}
     cursor.execute( query )
-    for field,ftype,table in cursor.fetchall():
+    for field,ftype,table in cursor.fetchall():        
         model = getModel( cursor, table, field )
+        if '_rel' in table:
+            print "relation table:",table
         if not source.get(model):
             source[model] = {}
         if not source[model].get(table):
@@ -202,15 +204,14 @@ def getModuleDiff(source, target):
     result = {}.fromkeys(tables)
     
     for table in tables:
-        print "******* Table ******"
         result[table] = {
             'migrate':False,
             'transformation': ktr.get(table, None),
-            'depends':False
+            'depends':False,
+            'delete':True,
             }
 
         if table in source and table in target:
-            print "both"
             result[table]['on'] = 'both'
             if config.json_verbose:
                 shash=source[table]['hash']
@@ -220,13 +221,11 @@ def getModuleDiff(source, target):
                 result[table]['migrate']=False
                 result[table]['source'] =[x[0] for x in list(set(shash)-set(thash))]
                 result[table]['target'] =[x[0] for x in list(set(thash)-set(shash))]
-                result[table]['delete'] = False
+                result[table]['delete'] = True
 
         elif table in source and not table in target:
-            print "source"
             result[table]['on'] = 'source'
         else:
-            print "target"
             result[table]['on'] = 'target'
     return result.copy()
         
@@ -237,18 +236,19 @@ def getConfig( source, target, migrate_module ):
         
     modules = list(set(source_modules.keys() + \
                 target_modules.keys()))
+    
     if migrate_module:
         if not migrate_module in modules:
             raise "No module in source or target"
         modules = [ migrate_module ]
         
-    #print "module", modules                
     result = {}.fromkeys( modules )
     for module in modules:
         result[module] = {}
-        if module != 'base':
-            continue
-        
+#        if module != 'base':
+#            continue
+#        
+#        print source_modules[module].keys()
         if module in source_modules and \
             module in target_modules:    
             result[module] = getModuleDiff(source_modules[module],
@@ -273,20 +273,21 @@ def writeConfigFile( config, filename='basic.json'):
 
 def migrate_module( source, target,  module ):
     config = getConfig( source, target, module )
- #   writeConfigFile( config, filename )
 
 def make_dependencies( data ):
     dependencies = []
     trans = data.copy()
     while trans:
         table,table_data = trans.popitem()
-        print "table:",table
         for depend in table_data['depends'] or []:
-            print "depend:",depend
             if depend in dependencies:
-                continue
-            index = dependencies.index(depend)
-            dependencies.insert(index, depend)
+                continue     
+            if table in dependencies:
+                index = dependencies.index(table)            
+                dependencies.insert(index, depend)
+            else:
+                dependencies.append(depend)
+            
         
         if not table in dependencies:
             dependencies.append(table)        
@@ -302,11 +303,10 @@ def make_config_file( filename ):
     disable_string = []
     enable_string = []
     for config_file in config_file_list:
-        print config_file
         f = open(config_file,'r')
         json_data = json.loads( f.read())
         f.close()
-        for table,table_data in json_data.iteritems():
+        for table,table_data in json_data.iteritems():            
             if table in result:
                 result[table]['transformation'] += table_data['transformation']
                 result[table]['depends'] += table_data['depends'] 
