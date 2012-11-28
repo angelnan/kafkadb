@@ -3,7 +3,7 @@
 
 ##############################################################################
 #
-# Copyright (c) 2011 NaN Projectes de Programari Lliure, S.L.
+# Copyright (c) 2011-2012 NaN Projectes de Programari Lliure, S.L.
 #                                                        http://www.NaN-tic.com
 #                                                          All Rights Reserved.
 #
@@ -33,13 +33,12 @@
 import psycopg2
 import json
 import os
-import glob
-import ConfigParser
 import optparse
 import sys
-import config
 import subprocess
+import ConfigParser
 
+config = {}
 
 
 class Settings(dict):
@@ -47,15 +46,239 @@ class Settings(dict):
         super(Settings, self).__init__(*args, **kw)
         self.__dict__ = self
 
+
+class KafkaModel(object):
+
+    def __init__(self, model, cursor):
+        self.fields = {}
+        self.model = model
+        self.cursor = cursor 
+
+        self.options = {
+            'migrate':False,
+            'transformation':'',
+            'depends':[],
+            'delete': False,
+        }
+
+        self.getFields()
+
+
+    def getFields(self):
+        self.cursor.execute(
+            'SELECT '\
+            '   a.attname as field,'\
+            '   pg_catalog.format_type(a.atttypid, a.atttypmod) as type '\
+            'FROM '\
+            '   pg_catalog.pg_attribute a, '\
+            '   pg_catalog.pg_class c, '\
+            '   pg_catalog.pg_namespace n  '\
+            'WHERE  '\
+            '   a.attnum > 0 '\
+            '   AND NOT a.attisdropped '\
+            '   AND a.attrelid = c.oid '\
+            '   AND n.oid = c.relnamespace '\
+            '   AND pg_catalog.pg_table_is_visible(c.oid) '\
+            '   AND nspname = %s'\
+            '   AND c.relkind != %s '\
+            '   AND c.oid not in ( select indexrelid from pg_index )' \
+            '   AND relname = %s ' \
+            'ORDER BY relname,field ' ,('public','S',self.model))
+
+
+        for field,ftype in self.cursor.fetchall():
+            self.fields[field]=ftype
+
+
+class TrytonModel(KafkaModel):
+
+    def __init__(self, model, cursor):
+        return super(TrytonModel, self).__init__(model, cursor)
+
+class OpenerpModel(KafkaModel):
+    
+    def __init__(self, model, cursor):
+        super(OpenerpModel, self).__init__(model, cursor)
+
+
+def moduleFactory(cursor, name, program, version=None):
+    if program == 'tryton':
+        return TrytonModule(cursor, name, program, version)
+    elif program == 'openerp':
+        return  OpenerpModule(cursor, name, program, version)
+    else:
+        print "not suported yet"
+        return None
+
+#TOOLS
+def readConfigFile(filename):
+    if not os.path.exists(filename):
+        return {}
+
+    config = ConfigParser.ConfigParser()
+    f = open(filename,'r')
+    config.readfp(f)
+
+    result = {}
+    for section in config.sections():
+        result[section] = {} 
+        for option in config.options(section):
+            result[section][option] = eval(config.get(section,option))
+
+    f.close()
+
+    return result
+
+class Module(object):
+    
+    
+    def __init__(self, cursor, name, program, version=None):
+
+        self.name = name
+        self.version = version
+        self.program = None
+        self.model = {}
+        self.cursor = cursor
+        self.factory = None
+        self.getModels()
+        self.dependencies = []
+        self.filename = os.path.join(config.get('transformation_path',''),
+                    self.name,self.name + ".cfg")
+
+        self.loadConfigFile()
+
+    def getModels(self):
+        pass
+
+    def getFiles(self):
+        path = os.path.join(config.get('transformation_path',''),
+                self.name)
+
+        files =  getFiles(path)
+        for filename in files:
+            file_model = filename.split('/')[-1]
+            model = file_model[:-4]
+            if not self.model.get(model):
+                continue
+
+            self.model[model].options['transformation'] = "'%s'"%filename
+            self.model[model].options['migrate']=True
+            
+
+    def loadConfigFile(self):
+
+        if not os.path.exists( self.filename ):
+            return
+
+        config = ConfigParser.ConfigParser()
+        f = open(self.filename,'r')
+        config.readfp(f)
+    
+        for section in config.sections():
+            model = self.model.get(section)
+            if not model:
+                continue
+            for option in model.options:
+                model.options[option] = config.get(section,option)
+
+        self.getFiles()
+
+
+    def writeConfigFile(self):
+    
+        data = {}
+        for model_name, model in self.model.iteritems():
+            data[model_name] = model.options.copy()
+
+        writeConfigFile(data, self.filename)
+
+#TOOLS
+def writeConfigFile( config, filename):
+    
+    config_parser = ConfigParser.ConfigParser()
+    f = open(filename,'w+')
+    config_parser.readfp(f)
+    
+    sorted_list=sorted(config.keys()) 
+    for key in sorted_list: 
+        config_parser.add_section(key)
+
+    if 'transformation_order' in config:
+        order = config.pop('transformation_order')
+        config_parser.set('transformation_order','transformation_order', order)
+
+    for key,value in config.iteritems():
+        for k,v in value.iteritems():
+            config_parser.set(key,k,v)
+
+    config_parser.write(f)
+    f.close()
+
+class OpenerpModule(Module):
+    
+    program = 'openerp'
+    
+
+    def getModels(self):
+        
+        self.cursor.execute(
+            "SELECT "
+            "   name "
+            "FROM "
+            "   ir_model_data "
+            "WHERE "
+            "   module = %s and "
+            "   name like %s",(self.name,'module_%'))
+
+        for model_name, in self.cursor.fetchall():
+            model_name = model_name.replace('module_','')
+            model = OpenerpModel(model_name, self.cursor)
+            self.model[model_name] = model
+            
+class TrytonModule(Module):
+    
+    program = 'tryton'
+
+    def getModels(self):
+        self.cursor.execute(
+            "SELECT "
+            "   model "
+            "FROM "
+            "   ir_model "
+            "WHERE "
+            "   module = %s",(self.name,))
+
+        for model_name, in self.cursor.fetchall():
+            model_name = model_name.replace('.','_')
+            model = TrytonModel(model_name, self.cursor)
+            self.model[model_name] = model
+
+
+def migrate_module( source, target,  module ):
+    
+    sourceModule = moduleFactory( source, module, 'openerp')
+    targetModule = moduleFactory( target, module, 'tryton')
+
+    targetModule.writeConfigFile()
+
 def parse_arguments(arguments):
     parser = optparse.OptionParser(usage='kafkadb.py [options]')
-    parser.add_option('', '--get-model', dest='model', help='Returns Model Name given a table')
-    parser.add_option('', '--get-model-field', dest='field', help='Returns Model given a Field and Table')
-    parser.add_option('', '--migrate-module', dest='module', help='Generate Migration File for Module... Default: All')
-    parser.add_option('', '--set-deferred', dest='deferred', help='Makes deferreble target database constraints')
-    parser.add_option('', '--set-undeferred', dest='undeferred', help='Makes undeferreble target database constraints')
-    parser.add_option('', '--make-config', dest='make', help='Generats config file to migrate system')
-    parser.add_option('', '--migrate', dest='migrate', help='Process execute migration')
+    parser.add_option('', '--get-model', dest='model',
+            help='Returns Model Name given a table')
+    parser.add_option('', '--get-model-field', dest='field',
+            help='Returns Model given a Field and Table')
+    parser.add_option('', '--migrate-module', dest='module', 
+            help='Generate Migration File for Module... Default: All')
+    parser.add_option('', '--set-deferred', dest='deferred', 
+            action='store_true', help='Makes deferreble target database \
+            constraints')
+    parser.add_option('', '--set-undeferred', dest='undeferred', 
+            action='store_true', help='Makes undeferreble target database \
+            constraints')
+    parser.add_option('', '--make-config', action='store_true', dest='make', 
+            help='Generats config file to migrate system')
+    parser.add_option('', '--migrate', action='store_true', dest='migrate', 
+            help='Process execute migration')
          
     (option, arguments) = parser.parse_args(arguments)
     # Remove first argument because it's application name
@@ -97,6 +320,7 @@ def parse_arguments(arguments):
         settings.migrate = True
     return settings
 
+#TOOLS
 def getFields( cursor ):
     query = """ SELECT
             a.attname as field,
@@ -123,7 +347,8 @@ def getFields( cursor ):
     for field,ftype,table in cursor.fetchall():        
         model = getModel( cursor, table, field )
         if '_rel' in table:
-            print "relation table:",table
+            pass
+            #print "relation table:",table
         if not source.get(model):
             source[model] = {}
         if not source[model].get(table):
@@ -132,7 +357,7 @@ def getFields( cursor ):
         source[model][table]['hash'].append( (field,ftype ) )
     return source.copy()
 
-
+#TOOLS
 def getModel( cursor, tableName=None, fieldName=None):
     
     model = None
@@ -169,11 +394,13 @@ def getModel( cursor, tableName=None, fieldName=None):
     
     return model
 
+#TOOLS
 def updateConstraints( cursor, deferred ):
     cursor.execute("UPDATE pg_trigger set tgdeferrable = %s"%deferred )
     cursor.execute("UPDATE pg_constraint set condeferrable=%s"%deferred)
     
     
+#TOOLS
 def getFiles( path='model-ktr'):
     #TODO: get all transformation for a given module.
     
@@ -187,17 +414,17 @@ def getFiles( path='model-ktr'):
                 
     return fileList
 
-    
+#TOOLS 
 def getTransformations( path='model-ktr'):
 
     ktr = {}     
     fileList = list(set(getFiles( path )))
     for file in fileList:
         table =file.split('/')[-1][:-4]
-        ktr[table] = ktr.get(table,[]) + [file]
-    
+        ktr[table] = ktr.get(table,[]) + [file.split('/')[-1]]
     return ktr
-   
+
+#TOOLS
 def getModuleDiff(source, target):
     
     tables = list(set(source.keys() + target.keys()))
@@ -229,57 +456,46 @@ def getModuleDiff(source, target):
             result[table]['on'] = 'target'
     return result.copy()
         
-def getConfig( source, target, migrate_module ):
+#def getConfig( source, target, migrate_module ):
 
-    source_modules = getFields( source )        
-    target_modules = getFields( target )
+#    source_modules = getFields( source )        
+
+#    target_modules = getFields( target )
         
-    modules = list(set(source_modules.keys() + \
-                target_modules.keys()))
-    
-    if migrate_module:
-        if not migrate_module in modules:
-            raise "No module in source or target"
-        modules = [ migrate_module ]
-        
-    result = {}.fromkeys( modules )
-    for module in modules:
-        result[module] = {}
-#        if module != 'base':
-#            continue
-#        
-#        print source_modules[module].keys()
-        if module in source_modules and \
-            module in target_modules:    
-            result[module] = getModuleDiff(source_modules[module],
-                        target_modules[module])
-        elif module in source_modules:
-            result[module] = getModuleDiff(source_modules[module],{})
-        else:
-            result[module] = getModuleDiff({},target_modules[module])
+#    modules = list(set(source_modules.keys() + \
+#                target_modules.keys()))
  
-        path = os.path.join(config.transformation_path, module)
-        file_name = '%s.json' % module        
-        writeConfigFile( result[module], file_name )          
-    return result
+#    if migrate_module:
+#        if not migrate_module in modules:
+#            raise "No module in source or target"
+#        modules = [ migrate_module ]
+        
+#    result = {}.fromkeys( modules )
+#    for module in modules:
+#        result[module] = {}
+#        if module in source_modules and \
+#            module in target_modules:    
+#            result[module] = getModuleDiff(source_modules[module],
+#                        target_modules[module])
+#        elif module in source_modules:
+#            result[module] = getModuleDiff(source_modules[module],{})
+#        else:
+#            result[module] = getModuleDiff({},target_modules[module])
+ 
+#        path = os.path.join(config.transformation_path, module)
+#        file_name = os.path.join(path,'%s.cfg' % module)
+#        writeConfigFile( result[module], file_name )          
+#    return result
 
-def writeConfigFile( config, filename='basic.json'):
-
-    with open(filename, mode='w+') as f:
-        json.dump( config , f, indent=8)
-
-    f.close()
-
-
-def migrate_module( source, target,  module ):
-    config = getConfig( source, target, module )
 
 def make_dependencies( data ):
     dependencies = []
     trans = data.copy()
     while trans:
         table,table_data = trans.popitem()
+        print table,table_data
         for depend in table_data['depends'] or []:
+            print depend
             if depend in dependencies:
                 continue     
             if table in dependencies:
@@ -293,78 +509,97 @@ def make_dependencies( data ):
             dependencies.append(table)        
     return dependencies
     
-        
+   
 def make_config_file( filename ):
-    
-    file_list = getFiles()
+
+    result = make_config()
+    writeConfigFile(result, config['migration_config'])
+
+
+
+def make_config(write_sql=False):
+   
+
+    file_list = getFiles( config['transformation_path'])
     result = {}
-    config_file_list = set([ x for x in file_list if '.json' in x])
-    delete_string = []
-    disable_string = []
-    enable_string = []
+    config_file_list = set([ x for x in file_list if '.cfg' in x])
+    delete = []
+    disable = []
+    enable = []
     for config_file in config_file_list:
-        f = open(config_file,'r')
-        json_data = json.loads( f.read())
-        f.close()
-        for table,table_data in json_data.iteritems():            
-            if table in result:
-                result[table]['transformation'] += table_data['transformation']
-                result[table]['depends'] += table_data['depends'] 
-                result[table]['execute'] += table_data['execute']
+        data = readConfigFile(config_file)
+        if data.get('migrate') == False:
+            continue
+        for key,value in data.iteritems():
+            if key in result:
+                result[key]['transformation'] += value['transformation']
+                result[key]['depends'] += value['depends'] 
+#                result[key]['execute'] += table_data['execute'] TODO:NEEDED?
                 continue
-            if not table_data.get('migrate'):
+            if not value.get('migrate'):
                 continue
-            result[table] = table_data.copy()
+            result[key] = value.copy()
             
-            if table_data.get('delete'):
-                delete_string.append("DELETE FROM %s; \n" % table)
+            if value.get('delete'):
+                delete.append("DELETE FROM %s; \n" % key)
                 
-            disable_string.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % table)
-            enable_string.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % table)
+            disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % key)
+            enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % key)
             
-    # DELETE TABLE DATA BEFORE INSERT
-    # DISABLE TRIGGERS
-    f = open( config.output_prepare_file, 'w')
-    f.write( "\n".join(disable_string))
-    f.write( "\n".join(delete_string))
-    f.close()
+
+    #TODO: WHEN?
+    if write_sql:
+        # DELETE TABLE DATA BEFORE INSERT
+        # DISABLE TRIGGERS
+        disable.insert(0,"-- preapre statements")
+        f = open( config['sql_prepare'], 'w+')
+        f.write( "\n".join(disable))
+        f.write( "\n".join(delete))
+        f.close()
     
     
-    # ENABLE TRIGGERS AGAIN
-    f = open( config.output_finish_file, 'w')
-    f.write( "\n".join(enable_string))
-    f.close()
+        # ENABLE TRIGGERS AGAIN
+        f = open( config['sql_finish'], 'w+')
+        f.write( "\n".join(enable))
+        f.close()
     
     dependencies = make_dependencies(result)
-    result['transformation_order'] = dependencies
-    writeConfigFile( result, 'migration.json')
+    result['transformation_order'] = ",".join(dependencies)
+    return result
+
     
+def migrate_sql():
+    make_config( write_sql=True)
+
     
             
 def migrate(targetCR):
     
     #Execute java process
-    
+   
+
     print "START...."
-    subprocess.call(["java","-jar", "kafkadb.jar", "migration.json"])        
+    migrate_sql()
+
+    subprocess.call(["java","-jar", "kafkadb.jar", "migration.cfg"])        
     print "Kettle transformation process finish"
     
     
     #Read prepare strings
     print "Reading PREPARE file..."
-    f = open( config.output_prepare_file)
+    f = open( config['sql_prepare'])
     prepare_sql = f.read()
     f.close()
     
     #Read copy generated file
     print "Reading COPY file"
-    f = open(config.output_copy_file)
+    f = open(config['sql_copy'])
     copy_sql = f.read()
     f.close()
     
     #Read copy generated file
     print "Reading Finish file"
-    f = open(config.output_finish_file)
+    f = open(config['finish'])
     finish_sql = f.read()
     f.close()
     
@@ -401,27 +636,32 @@ def migrate(targetCR):
 if __name__ == '__main__':
     
     settings = parse_arguments( sys.argv )
+   
+    with open('kettle.properties') as f:
+        for line in f:
+            tokens = line.split('=')
+            config[tokens[0].strip()] = "=".join([x.strip() for x in tokens[1:]])
 
     # Config
     source_db  = psycopg2.connect(
-        'dbname=%s' % config.source_db,
-        'host=%s' % config.source_host_db,
-        'user=%s' % config.source_user_db)
+        'dbname=%s' % config['source'],
+        'host=%s' % config['source_host'],
+        'user=%s' % config['source_user'])
     target_db  = psycopg2.connect(
-        'dbname=%s' % config.target_db ,
-        'host=%s' % config.target_host_db,
-        'user=%s' % config.target_user_db)
+        'dbname=%s' % config['target'],
+        'host=%s' % config['target_host'],
+        'user=%s' % config['target_user'])
     
     target_db.set_session(deferrable=True)
         
-    path = config.transformation_path
+    transformation_path = config['transformation_path']
     
     settings = parse_arguments( sys.argv )
 
     sourceCR = source_db.cursor()
     targetCR = target_db.cursor()   
 
-    ktr = getTransformations()
+    ktr = getTransformations(transformation_path)
     
     if settings.migrate:
         print "start migration"
@@ -446,7 +686,7 @@ if __name__ == '__main__':
         migrate_module( sourceCR, targetCR, settings.module )
    
     if settings.make:
-        make_config_file('migrate.json')
+        make_config_file(config['migration_config'])
     source_db.close()
     target_db.close()
     

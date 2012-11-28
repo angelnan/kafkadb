@@ -63,7 +63,7 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-        	String migration_filename = "migrate.json";
+        	String migration_filename = "migrate.cfg";
         	if(args.length == 1 ){
         		migration_filename = args[0];
         	}
