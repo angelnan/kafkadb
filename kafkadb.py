@@ -31,7 +31,6 @@
 ##############################################################################
 
 import psycopg2
-import json
 import os
 import optparse
 import sys
@@ -123,7 +122,7 @@ def readConfigFile(filename):
     for section in config.sections():
         result[section] = {} 
         for option in config.options(section):
-            result[section][option] = eval(config.get(section,option))
+            result[section][option] = config.get(section,option)
 
     f.close()
 
@@ -196,6 +195,11 @@ class Module(object):
 def writeConfigFile( config, filename):
     
     config_parser = ConfigParser.ConfigParser()
+    dirname = os.path.dirname(filename)
+
+    if dirname and not os.path.exists(dirname):
+        os.makedirs(dirname) 
+
     f = open(filename,'w+')
     config_parser.readfp(f)
     
@@ -599,7 +603,7 @@ def migrate(targetCR):
     
     #Read copy generated file
     print "Reading Finish file"
-    f = open(config['finish'])
+    f = open(config['sql_finish'])
     finish_sql = f.read()
     f.close()
     

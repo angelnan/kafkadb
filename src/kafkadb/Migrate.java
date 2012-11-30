@@ -373,7 +373,7 @@ public class Migrate {
 
 	String[] f = new String[tf.length];
 	for (int i = 0; i < tf.length; i++) {
-	    f[i] = tf[i].getName();
+	    f[i] = "\""+tf[i].getName()+"\"";
 	}
 	String result = StringUtils.join(f, ", ");
 
@@ -382,7 +382,7 @@ public class Migrate {
 	upload += "COPY " + target + " ( " + result + ") from '" + path
 		+ ".txt' with delimiter '|' CSV HEADER QUOTE '\"'; \n\n";
 
-	transMeta.writeXML("/tmp/" + source + "-" + target + ".ktr");
+	transMeta.writeXML("/tmp/output/" + source + "-" + target + ".ktr");
 	y += yoffset;
 
 	return transMeta;
@@ -419,15 +419,15 @@ public class Migrate {
     }
 
     public static void writeFile() {
-	try {
-	    FileWriter fstream = new FileWriter("/tmp/output_copy.sql");
-	    BufferedWriter out = new BufferedWriter(fstream);
-	    out.write(upload);
-	    // Close the output stream
-	    out.close();
-	} catch (Exception e) {
-	    System.err.println("Error: " + e.getMessage());
-	}
+        try {
+            FileWriter fstream = new FileWriter("/tmp/output/copy.sql");
+            BufferedWriter out = new BufferedWriter(fstream);
+            out.write(upload);
+            // Close the output stream
+            out.close();
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
     }
 
     public static void readConfig(String filename) throws Exception {
@@ -463,58 +463,6 @@ public class Migrate {
 
     }
 
-/*    public static void readConfigaaaai2(String filename) throws Exception {
-
-	ObjectMapper mapper = new ObjectMapper();
-	Map<String, HashMap> mp = mapper.readValue(new File(filename),
-		Map.class);
-
-	List<TransMeta> executed = new ArrayList<TransMeta>();
-
-	List<String> transformationOrder = (List<String>) mp.get("transformation_order");    
-	Iterator orderIt = transformationOrder.iterator();
-	while (orderIt.hasNext()) {
-	    String transformation = (String) orderIt.next();
-	    System.out.println(transformation);
-	    HashMap h = (HashMap) mp.get(transformation);
-	    List<String> tranFile = (List<String>) h.get("transformation");
-	    List<String> executeFile = (List<String>) h.get("execute");
-	    TransMeta transMeta;
-	    if (executeFile == null || executeFile.isEmpty())
-		    transMeta = Migrate.makeTrans(transformation, transformation,
-			    tranFile);
-
-	    else {
-            for (Iterator<String> it = executeFile.iterator(); it.hasNext();) {
-                String file = (String) it.next();
-                TransMeta read = new TransMeta(file);
-
-                if (executed.contains(read))
-                continue;
-                Trans t2 = new Trans(read);
-                transList.add(t2);
-                transMetaMap.put(read, t2);
-
-                t2.execute(null);
-                t2.waitUntilFinished();
-                executed.add(read);
-
-		    }
-		    continue;
-	    }
-	    if (executed.contains(transMeta))
-    		continue;
-	    Trans t = new Trans(transMeta);
-	    transList.add(t);
-	    transMetaMap.put(transMeta, t);
-
-	    t.execute(null);
-	    t.waitUntilFinished();
-	    executed.add(transMeta);
-
-	}
-
-    }*/
 
     public static List<TransMeta> executeTrans(TransMeta tm,
 	    List<TransMeta> executed) throws Exception {
