@@ -439,13 +439,18 @@ public class Migrate {
                 "transformation_order").split(",");    
 
         for(String table : execOrder){
-            log.info("Transformation:"+table);
+            log.info("************************************** Transformation:"+table);
 	        List<String> files = Arrays.asList(config.get(table,"transformation").split(","));
             String source = table;
             String target = table;
-            if( config.sections().contains("source"))
+            log.info( config.options(table).toString() );
+
+
+            if(config.options(table).contains("source")){
                 source = config.get(table,"source");
-            if( config.sections().contains("source"))
+                log.info("SOURCE:"+ source);
+            }
+            if( config.options(table).contains("target"))
                 target = config.get(table,"target");
         
             TransMeta transMeta = Migrate.makeTrans(source,target,files);

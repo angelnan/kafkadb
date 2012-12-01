@@ -56,7 +56,7 @@ class KafkaModel(object):
         self.options = {
             'migrate':False,
             'transformation':'',
-            'depends':[],
+            'depends':'',
             'delete': False,
         }
 
@@ -160,7 +160,7 @@ class Module(object):
             if not self.model.get(model):
                 continue
 
-            self.model[model].options['transformation'] = "'%s'"%filename
+            self.model[model].options['transformation'] = file_model
             self.model[model].options['migrate']=True
             
 
@@ -192,7 +192,7 @@ class Module(object):
         writeConfigFile(data, self.filename)
 
 #TOOLS
-def writeConfigFile( config, filename):
+def writeConfigFile(config, filename):
     
     config_parser = ConfigParser.ConfigParser()
     dirname = os.path.dirname(filename)
@@ -209,8 +209,10 @@ def writeConfigFile( config, filename):
 
     if 'transformation_order' in config:
         order = config.pop('transformation_order')
-        config_parser.set('transformation_order','transformation_order', order)
+        config_parser.set('transformation_order', 'transformation_order',
+                order)
 
+    
     for key,value in config.iteritems():
         for k,v in value.iteritems():
             config_parser.set(key,k,v)
@@ -460,46 +462,14 @@ def getModuleDiff(source, target):
             result[table]['on'] = 'target'
     return result.copy()
         
-#def getConfig( source, target, migrate_module ):
-
-#    source_modules = getFields( source )        
-
-#    target_modules = getFields( target )
-        
-#    modules = list(set(source_modules.keys() + \
-#                target_modules.keys()))
- 
-#    if migrate_module:
-#        if not migrate_module in modules:
-#            raise "No module in source or target"
-#        modules = [ migrate_module ]
-        
-#    result = {}.fromkeys( modules )
-#    for module in modules:
-#        result[module] = {}
-#        if module in source_modules and \
-#            module in target_modules:    
-#            result[module] = getModuleDiff(source_modules[module],
-#                        target_modules[module])
-#        elif module in source_modules:
-#            result[module] = getModuleDiff(source_modules[module],{})
-#        else:
-#            result[module] = getModuleDiff({},target_modules[module])
- 
-#        path = os.path.join(config.transformation_path, module)
-#        file_name = os.path.join(path,'%s.cfg' % module)
-#        writeConfigFile( result[module], file_name )          
-#    return result
-
 
 def make_dependencies( data ):
     dependencies = []
     trans = data.copy()
     while trans:
         table,table_data = trans.popitem()
-        print table,table_data
+      #  print table,table_data
         for depend in table_data['depends'] or []:
-            print depend
             if depend in dependencies:
                 continue     
             if table in dependencies:
@@ -527,45 +497,64 @@ def make_config(write_sql=False):
     file_list = getFiles( config['transformation_path'])
     result = {}
     config_file_list = set([ x for x in file_list if '.cfg' in x])
-    delete = []
-    disable = []
-    enable = []
+    #delete = []
+    #disable = []
+    #enable = []
+    #mapping = [
+    #        'DROP SCHEMA IF EXISTS  migration CASCADE;',
+    #        'CREATE schema migration;']
+    
+    dirname = os.path.dirname(config['sql_prepare'])
+    if dirname and not os.path.exists(dirname):
+        os.makedirs(dirname) 
+
     for config_file in config_file_list:
+        module = os.path.dirname(config_file)
         data = readConfigFile(config_file)
-        if data.get('migrate') == False:
-            continue
         for key,value in data.iteritems():
+            if value.get('migrate') == 'False':
+                continue
             if key in result:
-                result[key]['transformation'] += value['transformation']
+                result[key]['transformation'] += "%s/%s"(
+                        module,
+                        value['transformation'])
                 result[key]['depends'] += value['depends'] 
-#                result[key]['execute'] += table_data['execute'] TODO:NEEDED?
                 continue
-            if not value.get('migrate'):
-                continue
+
             result[key] = value.copy()
+            result[key]['transformation'] = "%s/%s"%(
+                    module,
+                    value['transformation'])
             
-            if value.get('delete'):
-                delete.append("DELETE FROM %s; \n" % key)
+            #if eval(value.get('delete',False)):
+            #    delete.append("DELETE FROM %s; \n" % key)
+
+            #if value.get('mapping'):
+            #    mapping.append(
+            #    'CREATE TABLE migration.%s (source int, target int);\n'%(
+            #        value.get('mapping') ) )
+
                 
-            disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % key)
-            enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % key)
+#            disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % key)
+#            enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % key)
             
 
     #TODO: WHEN?
-    if write_sql:
-        # DELETE TABLE DATA BEFORE INSERT
-        # DISABLE TRIGGERS
-        disable.insert(0,"-- preapre statements")
-        f = open( config['sql_prepare'], 'w+')
-        f.write( "\n".join(disable))
-        f.write( "\n".join(delete))
-        f.close()
+    #if write_sql:
+    #    # DELETE TABLE DATA BEFORE INSERT
+    #    # DISABLE TRIGGERS
+    #    disable.insert(0,"-- preapre statements")
+    #    f = open( config['sql_prepare'], 'w+')
+    #    f.write( "\n".join(mapping))
+    #    f.write( "\n".join(disable))
+    #    f.write( "\n".join(delete))
+    #    f.close()
     
     
-        # ENABLE TRIGGERS AGAIN
-        f = open( config['sql_finish'], 'w+')
-        f.write( "\n".join(enable))
-        f.close()
+    #    # ENABLE TRIGGERS AGAIN
+    #    f = open( config['sql_finish'], 'w+')
+    #    f.write( "\n".join(enable))
+    #    f.close()
     
     dependencies = make_dependencies(result)
     result['transformation_order'] = ",".join(dependencies)
@@ -573,9 +562,52 @@ def make_config(write_sql=False):
 
     
 def migrate_sql():
-    make_config( write_sql=True)
+    data = readConfigFile('migration.cfg')
+   
+    delete=[]
+    disable=[]
+    enable=[]
+    mapping = [
+            'DROP SCHEMA IF EXISTS  migration CASCADE;',
+            'CREATE schema migration;']
 
+    for key,value in data.iteritems():
+        if key == 'transformation_order':
+            continue
+
+        if value.get('migrate') == 'False':
+            continue
+        
+        if eval(value.get('delete','False')):
+            delete.append("DELETE FROM %s; \n" % key)
+
+        if value.get('mapping'):
+            mapping.append(
+                'CREATE TABLE migration.%s (source int, target int);\n'%(
+                value.get('mapping') ) )
+
+                
+        disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % key)
+        enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % key)
+            
+
+    # DELETE TABLE DATA BEFORE INSERT
+    # DISABLE TRIGGERS
+    disable.insert(0,"-- preapre statements")
+    f = open( config['sql_prepare'], 'w+')
+    f.write( "\n".join(disable))
+    f.write( "\n".join(delete))
+    f.close()
+
+
+    # ENABLE TRIGGERS AGAIN
+    f = open( config['sql_finish'], 'w+')
+    f.write( "\n".join(enable))
+    f.close()
     
+    f = open(config['sql_files'] + "/map.sql", 'w+')
+    f.write( "\n".join(mapping))
+    f.close()
             
 def migrate(targetCR):
     
@@ -584,6 +616,17 @@ def migrate(targetCR):
 
     print "START...."
     migrate_sql()
+
+    print "Reading Mappingfile..."
+    f = open( config['sql_files'] + "/map.sql")
+    map_sql = f.read()
+    f.close()
+    
+    if map_sql:
+        print "Prepare Statements.."
+        print map_sql
+        targetCR.execute(map_sql)
+        target_db.commit()
 
     subprocess.call(["java","-jar", "kafkadb.jar", "migration.cfg"])        
     print "Kettle transformation process finish"
@@ -594,6 +637,12 @@ def migrate(targetCR):
     f = open( config['sql_prepare'])
     prepare_sql = f.read()
     f.close()
+    
+    if prepare_sql:
+        print "Prepare Statements.."
+        print prepare_sql
+        targetCR.execute(prepare_sql)
+
     
     #Read copy generated file
     print "Reading COPY file"
@@ -614,10 +663,6 @@ def migrate(targetCR):
     #targetCR.execute("BEGIN TRANSACTION;")
     print "Upload Data start..."
     targetCR.execute("SET CONSTRAINTS ALL DEFERRED;")
-    if prepare_sql:
-        print "Prepare Statements.."
-        print prepare_sql
-        targetCR.execute(prepare_sql)
         
     print "upload finish, comitting..."
     print copy_sql
