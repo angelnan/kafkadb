@@ -58,7 +58,8 @@ class KafkaModel(object):
             'transformation':'',
             'depends':'',
             'delete': False,
-            'mapping':''
+            'mapping':'',
+            'source':None,
         }
 
         self.getFields()
@@ -217,7 +218,10 @@ def writeConfigFile(config, filename):
     
     for key,value in config.iteritems():
         for k,v in value.iteritems():
-            config_parser.set(key,k,v)
+            if k == 'source' and v == 'None':
+                config_parser.remove_option(key,k)
+            else:
+                config_parser.set(key,k,v)
 
     config_parser.write(f)
     f.close()
@@ -444,6 +448,7 @@ def getModuleDiff(source, target):
             'transformation': ktr.get(table, None),
             'depends':False,
             'delete':True,
+            'source':None,
             }
 
         if table in source and table in target:
@@ -502,12 +507,6 @@ def make_config(write_sql=False):
     file_list = getFiles( config['transformation_path'])
     result = {}
     config_file_list = set([ x for x in file_list if '.cfg' in x])
-    #delete = []
-    #disable = []
-    #enable = []
-    #mapping = [
-    #        'DROP SCHEMA IF EXISTS  migration CASCADE;',
-    #        'CREATE schema migration;']
     
     dirname = os.path.dirname(config['sql_prepare'])
     if dirname and not os.path.exists(dirname):
@@ -531,37 +530,8 @@ def make_config(write_sql=False):
                     module,
                     value['transformation'])
             
-            #if eval(value.get('delete',False)):
-            #    delete.append("DELETE FROM %s; \n" % key)
-
-            #if value.get('mapping'):
-            #    mapping.append(
-            #    'CREATE TABLE migration.%s (source int, target int);\n'%(
-            #        value.get('mapping') ) )
-
-                
-#            disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % key)
-#            enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % key)
-            
-
-    #TODO: WHEN?
-    #if write_sql:
-    #    # DELETE TABLE DATA BEFORE INSERT
-    #    # DISABLE TRIGGERS
-    #    disable.insert(0,"-- preapre statements")
-    #    f = open( config['sql_prepare'], 'w+')
-    #    f.write( "\n".join(mapping))
-    #    f.write( "\n".join(disable))
-    #    f.write( "\n".join(delete))
-    #    f.close()
-    
-    
-    #    # ENABLE TRIGGERS AGAIN
-    #    f = open( config['sql_finish'], 'w+')
-    #    f.write( "\n".join(enable))
-    #    f.close()
-    
     dependencies = make_dependencies(result)
+    dependencies.remove(None)
     result['transformation_order'] = ",".join(dependencies)
     return result
 
