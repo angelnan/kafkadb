@@ -58,6 +58,7 @@ class KafkaModel(object):
             'transformation':'',
             'depends':'',
             'delete': False,
+            'mapping':''
         }
 
         self.getFields()
@@ -178,7 +179,8 @@ class Module(object):
             if not model:
                 continue
             for option in model.options:
-                model.options[option] = config.get(section,option)
+                if config.has_option(section,option):
+                    model.options[option] = config.get(section,option)
 
         self.getFiles()
 
@@ -468,19 +470,22 @@ def make_dependencies( data ):
     trans = data.copy()
     while trans:
         table,table_data = trans.popitem()
-      #  print table,table_data
-        for depend in table_data['depends'] or []:
+        for depend in table_data['depends'].split(',') or []:
+            depend = depend or None
+
             if depend in dependencies:
                 continue     
             if table in dependencies:
                 index = dependencies.index(table)            
                 dependencies.insert(index, depend)
             else:
-                dependencies.append(depend)
+                if not depend is None:
+                    dependencies.append(depend)
             
         
         if not table in dependencies:
             dependencies.append(table)        
+
     return dependencies
     
    
@@ -613,6 +618,8 @@ def migrate(targetCR):
     
     #Execute java process
    
+    if not os.path.exists(config['sql_files']):
+        os.makedirs(config['sql_files']) 
 
     print "START...."
     migrate_sql()
