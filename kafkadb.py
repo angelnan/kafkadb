@@ -135,7 +135,6 @@ class Module(object):
     
     
     def __init__(self, cursor, name, program, version=None):
-
         self.name = name
         self.version = version
         self.program = None
@@ -264,12 +263,14 @@ class TrytonModule(Module):
 
     def getModels(self):
         self.cursor.execute(
-            "SELECT "
-            "   model "
-            "FROM "
-            "   ir_model "
-            "WHERE "
-            "   module = %s",(self.name,))
+            'SELECT '
+            '    distinct m.model '
+            'FROM'
+            '    ir_model_field f,'
+            '    ir_model m '
+            'WHERE'
+            '    f.model = m.id and '
+            '    f.module=%s',(self.name,))
 
         for model_name, in self.cursor.fetchall():
             model_name = model_name.replace('.','_')
@@ -371,7 +372,6 @@ def getFields( cursor ):
         model = getModel( cursor, table, field )
         if '_rel' in table:
             pass
-            #print "relation table:",table
         if not source.get(model):
             source[model] = {}
         if not source[model].get(table):
@@ -529,7 +529,6 @@ def make_config(targetCr):
         module = os.path.dirname(config_file)
         module_name = module.split('/')[-1] 
         targetModule = moduleFactory( targetCr, module_name, 'tryton')
-        print "module:",module_name
         if not targetModule.isInstalled():
             continue
 
@@ -568,7 +567,6 @@ def migrate_sql():
             'CREATE schema migration;']
 
     for key,value in data.iteritems():
-        print key,value
         target_table = value.get('target',key)
 
         if key == 'transformation_order':
