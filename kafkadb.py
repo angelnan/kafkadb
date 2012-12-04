@@ -60,6 +60,7 @@ class KafkaModel(object):
             'delete': False,
             'mapping':'',
             'source':None,
+            'target':None,
         }
 
         self.getFields()
@@ -165,6 +166,16 @@ class Module(object):
             self.model[model].options['transformation'] = file_model
             self.model[model].options['migrate']=True
             
+    def isInstalled(self):
+        self.cursor.execute(
+            'select count(*) from ir_module_module where name=%s and state=%s',
+            (self.name,'installed'))
+        res = self.cursor.fetchone()[0]
+        if res:
+            return True
+        
+        return False
+
 
     def loadConfigFile(self):
 
@@ -218,7 +229,7 @@ def writeConfigFile(config, filename):
     
     for key,value in config.iteritems():
         for k,v in value.iteritems():
-            if k == 'source' and v == 'None':
+            if (k == 'source' and v == 'None') or (k =='target' and v =='None'):
                 config_parser.remove_option(key,k)
             else:
                 config_parser.set(key,k,v)
@@ -449,6 +460,7 @@ def getModuleDiff(source, target):
             'depends':False,
             'delete':True,
             'source':None,
+            'target':None,
             }
 
         if table in source and table in target:
@@ -494,14 +506,15 @@ def make_dependencies( data ):
     return dependencies
     
    
-def make_config_file( filename ):
+def make_config_file( targetCR,filename ):
 
-    result = make_config()
+    result = make_config(targetCR)
     writeConfigFile(result, config['migration_config'])
 
 
 
-def make_config(write_sql=False):
+
+def make_config(targetCr):
    
 
     file_list = getFiles( config['transformation_path'])
@@ -514,6 +527,13 @@ def make_config(write_sql=False):
 
     for config_file in config_file_list:
         module = os.path.dirname(config_file)
+        module_name = module.split('/')[-1] 
+        targetModule = moduleFactory( targetCr, module_name, 'tryton')
+        print "module:",module_name
+        if not targetModule.isInstalled():
+            continue
+
+
         data = readConfigFile(config_file)
         for key,value in data.iteritems():
             if value.get('migrate') == 'False':
@@ -531,7 +551,8 @@ def make_config(write_sql=False):
                     value['transformation'])
             
     dependencies = make_dependencies(result)
-    dependencies.remove(None)
+    if None in dependencies:
+        dependencies.remove(None)
     result['transformation_order'] = ",".join(dependencies)
     return result
 
@@ -547,6 +568,9 @@ def migrate_sql():
             'CREATE schema migration;']
 
     for key,value in data.iteritems():
+        print key,value
+        target_table = value.get('target',key)
+
         if key == 'transformation_order':
             continue
 
@@ -554,7 +578,7 @@ def migrate_sql():
             continue
         
         if eval(value.get('delete','False')):
-            delete.append("DELETE FROM %s; \n" % key)
+            delete.append("DELETE FROM %s; \n" % target_table)
 
         if value.get('mapping'):
             mapping.append(
@@ -562,8 +586,8 @@ def migrate_sql():
                 value.get('mapping') ) )
 
                 
-        disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % key)
-        enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % key)
+        disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % target_table)
+        enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % target_table)
             
 
     # DELETE TABLE DATA BEFORE INSERT
@@ -712,7 +736,7 @@ if __name__ == '__main__':
         migrate_module( sourceCR, targetCR, settings.module )
    
     if settings.make:
-        make_config_file(config['migration_config'])
+        make_config_file(targetCR,config['migration_config'])
     source_db.close()
     target_db.close()
     
