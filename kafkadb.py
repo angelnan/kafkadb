@@ -538,10 +538,12 @@ def make_config(targetCr):
             if value.get('migrate') == 'False':
                 continue
             if key in result:
-                result[key]['transformation'] += "%s/%s"(
+                result[key]['transformation'] = result[key]['transformation']+\
+                    ",%s/%s"%(
                         module,
                         value['transformation'])
-                result[key]['depends'] += value['depends'] 
+                result[key]['depends'] = result[key]['depends'] +","+ \
+                        value['depends'] 
                 continue
 
             result[key] = value.copy()
