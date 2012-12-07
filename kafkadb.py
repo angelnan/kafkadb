@@ -128,7 +128,6 @@ def readConfigFile(filename):
             result[section][option] = config.get(section,option)
 
     f.close()
-
     return result
 
 class Module(object):
@@ -188,7 +187,8 @@ class Module(object):
         for section in config.sections():
             model = self.model.get(section)
             if not model:
-                continue
+                self.model[section]= TrytonModel(section,self.cursor)
+                model =self.model[section]
             for option in model.options:
                 if config.has_option(section,option):
                     model.options[option] = config.get(section,option)
@@ -531,12 +531,11 @@ def make_config(targetCr):
         targetModule = moduleFactory( targetCr, module_name, 'tryton')
         if not targetModule.isInstalled():
             continue
-
-
         data = readConfigFile(config_file)
         for key,value in data.iteritems():
             if value.get('migrate') == 'False':
                 continue
+
             if key in result:
                 result[key]['transformation'] = result[key]['transformation']+\
                     ",%s/%s"%(
@@ -544,12 +543,15 @@ def make_config(targetCr):
                         value['transformation'])
                 result[key]['depends'] = result[key]['depends'] +","+ \
                         value['depends'] 
+                result[key]['delete'] = str( eval(result[key]['delete']) or 
+                        eval(value['delete']))
                 continue
 
             result[key] = value.copy()
             result[key]['transformation'] = "%s/%s"%(
                     module,
                     value['transformation'])
+            
             
     dependencies = make_dependencies(result)
     if None in dependencies:
