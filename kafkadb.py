@@ -686,6 +686,10 @@ if __name__ == '__main__':
             tokens = line.split('=')
             config[tokens[0].strip()] = "=".join([x.strip() for x in tokens[1:]])
 
+    if not os.path.exists(config['sql_files']):
+        os.makedirs(config['sql_files'])
+    open(config['sql_copy'], 'w').close()
+
     # Config
     source_db = psycopg2.connect(
         'dbname=%s' % config['source'],
