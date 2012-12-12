@@ -696,13 +696,15 @@ if __name__ == '__main__':
 
     # Config
     source_db = psycopg2.connect(
-        'dbname=%s' % config['source'],
-        'host=%s' % config['source_host'],
-        'user=%s' % config['source_user'])
+		dbname = config['source'],
+		host = config['source_host'],
+		user = config['source_user'],
+		password = config['source_password'])
     target_db = psycopg2.connect(
-        'dbname=%s' % config['target'],
-        'host=%s' % config['target_host'],
-        'user=%s' % config['target_user'])
+        dbname = config['target'],
+        host = config['target_host'],
+        user = config['target_user'],
+        password = config['target_password'])
 
     target_db.set_session(deferrable=True)
 
