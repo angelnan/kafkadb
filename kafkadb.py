@@ -568,6 +568,7 @@ def migrate_sql():
     mapping = [
             'DROP SCHEMA IF EXISTS  migration CASCADE;',
             'CREATE schema migration;']
+    sequence = []
 
     for key, value in data.iteritems():
         target_table = value.get('target', key)
@@ -588,6 +589,8 @@ def migrate_sql():
 
         disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % target_table)
         enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % target_table)
+        sequence.append("select setval('%s_id_seq', (select max(id) from %s));"
+            "\n" % (target_table, target_table))
 
     # DELETE TABLE DATA BEFORE INSERT
     # DISABLE TRIGGERS
@@ -600,6 +603,7 @@ def migrate_sql():
     # ENABLE TRIGGERS AGAIN
     f = open(config['sql_finish'], 'w+')
     f.write("\n".join(enable))
+    f.write("\n".join(sequence))
     f.close()
 
     f = open(config['sql_files'] + "/map.sql", 'w+')
