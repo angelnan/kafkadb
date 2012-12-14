@@ -350,22 +350,33 @@ public class Migrate {
 	    	transMeta.addTransHop(ifs);
 	    }
 
+	    System.out.println("2");
+
 	    StepMeta output_connect_step = findTarget(transMeta);
+	    System.out.println("2.2"+output_connect_step.toString());
+
 	    if (output_connect_step == null)
 		return transMeta;
+
+	    System.out.println("3");
 
 	    TransHopMeta ofs = new TransHopMeta(output_connect_step, selectStep);
 	    transMeta.addTransHop(ofs);
 	    TransHopMeta st = new TransHopMeta(selectStep, toStep);
 	    transMeta.addTransHop(st);
 
+	    System.out.println("4");
 	    // If Transformation, then got the dummy output and look for
 	    // output fields from that step.
 	    fromFields.clear();
 	    fromFields = getPreviousFields(transMeta, output_connect_step);
 	    selectFields = getTargetFields(fromFields, target);
+	    
+        System.out.println("4");
+
 	    selectMeta.allocate(selectFields.length, 0, 0);
 	    selectMeta.setSelectName(selectFields);
+	    System.out.println("5");
 
 	    tf = getFileFields(transMeta, output_connect_step, target);
 	    fileOutput.setOutputFields(tf);
@@ -400,8 +411,9 @@ public class Migrate {
         transMeta2.setName("trans");
         transMeta2.setSharedObjects(shared);
         transMeta2.readSharedObjects();
-        transMeta2.setLogLevel(LogLevel.ROWLEVEL);
-        //transMeta2.setLogLevel(LogLevel.BASIC);
+        //transMeta2.setLogLevel(LogLevel.ROWLEVEL);
+//        transMeta2.setLogLevel(LogLevel.BASIC);
+        transMeta2.setLogLevel(LogLevel.MINIMAL);
         transMeta2.setUsingUniqueConnections(true);
 
         // Instance to Execute Trans.
@@ -413,8 +425,6 @@ public class Migrate {
         log.info("source databse:" + sourceDb);
         targetDb = transMeta2.findDatabase("target");
         log.info("target databse:" + targetDb);
-        // upload += "BEGIN TRANSACTION;\n\n";
-        // upload += "SET CONSTRAINTS ALL DEFERRED; \n\n";
 
     }
 
@@ -439,7 +449,7 @@ public class Migrate {
                 "transformation_order").split(",");    
 
         for(String table : execOrder){
-            log.info("************************************** Transformation:"+table);
+            log.info("\n\n\n************************************** Transformation:"+table);
 	        List<String> files = Arrays.asList(config.get(table,"transformation").split(","));
             String source = table;
             String target = table;
@@ -450,8 +460,10 @@ public class Migrate {
                 source = config.get(table,"source");
                 log.info("SOURCE:"+ source);
             }
-            if( config.options(table).contains("target"))
+            if( config.options(table).contains("target")){
                 target = config.get(table,"target");
+                log.info("Target:"+ target);
+            }
         
             TransMeta transMeta = Migrate.makeTrans(source,target,files);
             
