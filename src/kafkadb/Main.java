@@ -1,5 +1,6 @@
 /*
- Copyright (c) 2011 NaN Projectes de Programari Lliure, S.L. All Rights Reserved.
+ Copyright (c) 2011-2012 NaN Projectes de Programari Lliure, S.L. 
+                         All Rights Reserved.
                          http://www.NaN-tic.com
 
  WARNING: This program as such is intended to be used by professional
