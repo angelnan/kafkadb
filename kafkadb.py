@@ -61,6 +61,7 @@ class KafkaModel(object):
             'mapping': '',
             'source': None,
             'target': None,
+            'insert': False,
         }
 
         self.getFields()
@@ -262,6 +263,7 @@ class TrytonModule(Module):
 
     def getModels(self):
         self.cursor.execute(
+            'SELECT DISTINCT model FROM ('
             'SELECT '
             '    distinct m.model '
             'FROM'
@@ -269,7 +271,14 @@ class TrytonModule(Module):
             '    ir_model m '
             'WHERE'
             '    f.model = m.id and '
-            '    f.module=%s', (self.name,))
+            '    f.module=%s '
+            'UNION '
+            'SELECT '
+            ' distinct model '
+            'FROM'
+            '   ir_model_data '
+            'WHERE'
+            '   module = %s ) as aux', (self.name,self.name))
 
         for model_name, in self.cursor.fetchall():
             model_name = model_name.replace('.', '_')
@@ -465,6 +474,7 @@ def getModuleDiff(source, target):
             'delete': True,
             'source': None,
             'target': None,
+            'insert': False,
             }
 
         if table in source and table in target:
@@ -493,7 +503,6 @@ def make_dependencies(data):
         table, table_data = trans.popitem()
         for depend in table_data['depends'].split(',') or []:
             depend = depend or None
-
             if depend in dependencies:
                 continue
             if table in dependencies:
@@ -537,10 +546,17 @@ def make_config(targetCr):
                 continue
 
             if key in result:
-                result[key]['transformation'] = result[key]['transformation'] + \
-                    ",%s/%s" % (
+                if not eval(value.get('insert','False')):
+                    result[key]['transformation'] = "%s,%s/%s" % (
+                        result[key]['transformation'],
                         module,
                         value['transformation'])
+                else:
+                    result[key]['transformation'] = "%s/%s,%s" % ( 
+                        module,
+                        value['transformation'],
+                        result[key]['transformation'])
+
                 result[key]['depends'] = result[key]['depends'] + "," + \
                         value['depends']
                 result[key]['delete'] = str(eval(result[key]['delete']) or
