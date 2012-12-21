@@ -157,6 +157,8 @@ class Module(object):
 
         files = getFiles(path)
         for filename in files:
+            if not '.ktr' in filename:
+                continue
             file_model = filename.split('/')[-1]
             model = file_model[:-4]
             if not self.model.get(model):
