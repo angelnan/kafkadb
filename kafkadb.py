@@ -601,9 +601,11 @@ def migrate_sql():
             delete.append("DELETE FROM %s; \n" % target_table)
 
         if value.get('mapping'):
-            mapping.append(
+            mappings = value['mapping'].split(',')
+            for mapp in mappings:
+                mapping.append(
                 'CREATE TABLE migration.%s (source int, target int);\n' % (
-                value.get('mapping')))
+                mapp))
 
         disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % target_table)
         enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % target_table)
