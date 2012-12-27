@@ -7,7 +7,7 @@
 	<property name="build" value="./build" />
 	<property name="lib.dir" value="./kettle/lib/" />
 	<property name="libext.dir" value="./kettle/libext/" />
-	<property name="kafkadb.libext.dir" value="./ext/" />
+	<property name="kafkadb.libext.dir" value="./libext/" />
 	<property name="main-class" value="kafkadb.Main" />
 
 	<path id="classpath">
