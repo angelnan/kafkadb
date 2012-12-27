@@ -5,263 +5,28 @@
 	<property name="source" value="1.6" />
 	<property name="src" value="./src" />
 	<property name="build" value="./build" />
-	<property name="lib.dir" value="lib" />
-	<property name="libext.dir" value="libext" />
+	<property name="lib.dir" value="./kettle/lib/" />
+	<property name="libext.dir" value="./kettle/libext/" />
+	<property name="kafkadb.libext.dir" value="./ext/" />
 	<property name="main-class" value="kafkadb.Main" />
-<!--
-	<path id="classpath">
-		<fileset dir="${lib.dir}" includes="**/*.jar" />
-		<fileset dir="${libext.dir}" includes="**/*.jar" />
-		<fileset dir="${build}" includes="**/*.jar" />
-		<fileset dir="." includes="**/*.jar" />
-	</path> --> 
 
 	<path id="classpath">
-		<pathelement location="${build}"/>
-		<pathelement location="${ant.project.name}.jar" />
-		<pathelement location="lib/kettle-core.jar" />
-		<pathelement location="lib/kettle-db.jar" />
-		<pathelement location="lib/kettle-dbdialog.jar" />
-		<pathelement location="lib/kettle-engine.jar" />
-		<pathelement location="lib/kettle-test.jar" />
-		<pathelement location="lib/kettle-ui-swt.jar" />
-		<pathelement location="libext/commons/commons-beanutils-1.8.0.jar" />
-		<pathelement location="libext/commons/commons-codec-1.3.jar" />
-		<pathelement location="libext/commons/commons-collections-3.1.jar" />
-		<pathelement location="libext/commons/commons-dbcp-1.2.1.jar" />
-		<pathelement location="libext/commons/commons-digester-1.8.jar" />
-		<pathelement location="libext/commons/commons-discovery-0.4.jar" />
-		<pathelement location="libext/commons/commons-fileupload-1.0.jar" />
-		<pathelement location="libext/commons/commons-httpclient-3.0.1.jar" />
-		<pathelement location="libext/commons/commons-io-1.4.jar" />
-		<pathelement location="libext/commons/commons-lang-2.4.jar" />
-		<pathelement location="libext/commons/commons-logging-1.1.jar" />
-		<pathelement location="libext/commons/commons-math-1.1.jar" />
-		<pathelement location="libext/commons/commons-net-1.4.1.jar" />
-		<pathelement location="libext/commons/commons-pool-1.3.jar" />
-		<pathelement location="libext/commons/commons-validator-1.3.1.jar" />
-		<pathelement location="libext/elasticsearch/elasticsearch-0.16.3.jar" />
-		<pathelement location="libext/elasticsearch/lucene-analyzers-3.1.0.jar" />
-		<pathelement location="libext/elasticsearch/lucene-core-3.1.0.jar" />
-		<pathelement location="libext/elasticsearch/lucene-highlighter-3.1.0.jar" />
-		<pathelement location="libext/elasticsearch/lucene-memory-3.1.0.jar" />
-		<pathelement location="libext/elasticsearch/lucene-queries-3.1.0.jar" />
-		<pathelement location="libext/feeds/feed4j.jar" />
-		<pathelement location="libext/feeds/georss-rome-0.9.8.jar" />
-		<pathelement location="libext/feeds/jdom.jar" />
-		<pathelement location="libext/feeds/nekohtml.jar" />
-		<pathelement location="libext/feeds/rome-1.0.jar" />
-		<pathelement location="libext/feeds/xml-apis.jar" />
-		<pathelement location="libext/google/gdata-analytics-2.1.jar" />
-		<pathelement location="libext/google/gdata-analytics-meta-2.1.jar" />
-		<pathelement location="libext/google/gdata-client-1.0.jar" />
-		<pathelement location="libext/google/gdata-client-meta-1.0.jar" />
-		<pathelement location="libext/google/gdata-core-1.0.jar" />
-		<pathelement location="libext/google/google-collect-1.0-rc1.jar" />
-		<pathelement location="libext/google/jsr305.jar" />
-		<pathelement location="libext/hive/hive-exec-0.7.0-pentaho-1.0.0.jar" />
-		<pathelement location="libext/hive/hive-metastore-0.7.0-pentaho-1.0.0.jar" />
-		<pathelement location="libext/hive/hive-service-0.7.0-pentaho-1.0.0.jar" />
-		<pathelement location="libext/hive/libfb303-0.5.0.jar" />
-		<pathelement location="libext/hive/libthrift-0.5.0.jar" />
-		<pathelement location="libext/JDBC/db2jcc_license_cu.jar" />
-		<pathelement location="libext/JDBC/db2jcc.jar" />
-		<pathelement location="libext/JDBC/derby.jar" />
-		<pathelement location="libext/JDBC/derbyclient.jar" />
-		<pathelement location="libext/JDBC/h2.jar" />
-		<pathelement location="libext/JDBC/hive-jdbc-0.7.0-pentaho-1.0.0.jar" />
-		<pathelement location="libext/JDBC/hsqldb.jar" />
-		<pathelement location="libext/JDBC/ifxjdbc.jar" />
-		<pathelement location="libext/JDBC/iijdbc.jar" />
-		<pathelement location="libext/JDBC/infobright-core-3.4.jar" />
-		<pathelement location="libext/JDBC/interclient.jar" />
-		<pathelement location="libext/JDBC/jaybird-full-2.1.0.jar" />
-		<pathelement location="libext/JDBC/jt400.jar" />
-		<pathelement location="libext/JDBC/jtds-1.2.5.jar" />
-		<pathelement location="libext/JDBC/kingbasejdbc.jar" />
-		<pathelement location="libext/JDBC/LucidDbClient-minimal.jar" />
-		<pathelement location="libext/JDBC/monetdb-1.7-jdbc.jar" />
-		<pathelement location="libext/JDBC/mysql-connector-java-5.1.17.jar" />
-		<pathelement location="libext/JDBC/ojdbc14.jar" />
-		<pathelement location="libext/JDBC/orai18n.jar" />
-		<pathelement location="libext/JDBC/postgresql-8.4-702.jdbc3.jar" />
-		<pathelement location="libext/JDBC/rdbthin.jar" />
-		<pathelement location="libext/JDBC/sapdbc.jar" />
-		<pathelement location="libext/JDBC/sqlite-jdbc-3.7.2.jar" />
-		<pathelement location="libext/JDBC/unijdbc.jar" />
-		<pathelement location="libext/JDBC/xdbjdbc.jar" />
-		<pathelement location="libext/jersey/jersey-apache-client-1.7.jar" />
-		<pathelement location="libext/jersey/jersey-client-1.7.jar" />
-		<pathelement location="libext/jersey/jersey-core-1.7.jar" />
-		<pathelement location="libext/jfree/jcommon-1.0.14.jar" />
-		<pathelement location="libext/jfree/jfreechart-1.0.9.jar" />
-		<pathelement location="libext/mondrian/eigenbase-properties-1.1.0.10924.jar" />
-		<pathelement location="libext/mondrian/eigenbase-resgen-1.3.0.13768.jar" />
-		<pathelement location="libext/mondrian/eigenbase-xom-1.3.0.13768.jar" />
-		<pathelement location="libext/mondrian/javacup-10k.jar" />
-		<pathelement location="libext/mondrian/mondrian-3.2.1.13885.jar" />
-		<pathelement location="libext/mondrian/olap4j-0.9.8.340.jar" />
-		<pathelement location="libext/mondrian/saxon9-xom.jar" />
-		<pathelement location="libext/pentaho/hadoop-core-0.20.2-cdh3u0.jar" />
-		<pathelement location="libext/pentaho/hbase-0.90.1.jar" />
-		<pathelement location="libext/pentaho/jets3t-0.7.4.jar" />
-		<pathelement location="libext/pentaho/kettle-vfs-20100924.jar" />
-		<pathelement location="libext/pentaho/libbase-1.2.2.jar" />
-		<pathelement location="libext/pentaho/pentaho-formula-editor-0.0.1.jar" />
-		<pathelement location="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar" />
-		<pathelement location="libext/pentaho/pentaho-s3-vfs-1.0.1.jar" />
-		<pathelement location="libext/pentaho/pentaho-vfs-browser-2.0.3.jar" />
-		<pathelement location="libext/pentaho/pentaho-xul-core-3.3.1.jar" />
-		<pathelement location="libext/pentaho/pentaho-xul-swt-3.3.1.jar" />
-		<pathelement location="libext/pentaho/sqleonardo-swt-wrapper.jar" />
-		<pathelement location="libext/pentaho/sqleonardo.jar" />
-		<pathelement location="libext/pentaho/zookeeper-3.3.2.jar" />
-		<pathelement location="libext/poi/geronimo-stax-api_1.0_spec-1.0.jar" />
-		<pathelement location="libext/poi/poi-3.7-20101029.jar" />
-		<pathelement location="libext/poi/poi-ooxml-3.7-20101029.jar" />
-		<pathelement location="libext/poi/poi-ooxml-schemas-3.7-20101029.jar" />
-		<pathelement location="libext/poi/xmlbeans-2.3.0.jar" />
-		<pathelement location="libext/reporting/antlr-2.7.6.jar" />
-		<pathelement location="libext/reporting/asm-1.5.3.jar" />
-		<pathelement location="libext/reporting/asm-attrs-1.5.3.jar" />
-		<pathelement location="libext/reporting/avalon-framework-4.1.3.jar" />
-		<pathelement location="libext/reporting/axis2-adb-1.4.1.jar" />
-		<pathelement location="libext/reporting/axis2-kernel-1.4.1.jar" />
-		<pathelement location="libext/reporting/barbecue-1.5-beta1.jar" />
-		<pathelement location="libext/reporting/batik-awt-util-1.6.jar" />
-		<pathelement location="libext/reporting/batik-bridge-1.6.jar" />
-		<pathelement location="libext/reporting/batik-css-1.6.jar" />
-		<pathelement location="libext/reporting/batik-dom-1.6.jar" />
-		<pathelement location="libext/reporting/batik-ext-1.6.jar" />
-		<pathelement location="libext/reporting/batik-gui-util-1.6.jar" />
-		<pathelement location="libext/reporting/batik-gvt-1.6.jar" />
-		<pathelement location="libext/reporting/batik-parser-1.6.jar" />
-		<pathelement location="libext/reporting/batik-script-1.6.jar" />
-		<pathelement location="libext/reporting/batik-svg-dom-1.6.jar" />
-		<pathelement location="libext/reporting/batik-util-1.6.jar" />
-		<pathelement location="libext/reporting/batik-xml-1.6.jar" />
-		<pathelement location="libext/reporting/bcmail-jdk14-138.jar" />
-		<pathelement location="libext/reporting/bcprov-jdk14-138.jar" />
-		<pathelement location="libext/reporting/bsf-2.4.0.jar" />
-		<pathelement location="libext/reporting/bsh-1.3.0.jar" />
-		<pathelement location="libext/reporting/cglib-nodep-2.1_3.jar" />
-		<pathelement location="libext/reporting/ehcache-core-2.0.1.jar" />
-		<pathelement location="libext/reporting/groovy-all-1.5.6.jar" />
-		<pathelement location="libext/reporting/hibernate-3.2.6.ga.jar" />
-		<pathelement location="libext/reporting/itext-2.1.7.jar" />
-		<pathelement location="libext/reporting/itext-rtf-2.1.7.jar" />
-		<pathelement location="libext/reporting/jettison-1.0.1.jar" />
-		<pathelement location="libext/reporting/jlfgr-1.0.jar" />
-		<pathelement location="libext/reporting/jmi-200507110943.jar" />
-		<pathelement location="libext/reporting/jmiutils-200507110943.jar" />
-		<pathelement location="libext/reporting/joda-time-1.6.jar" />
-		<pathelement location="libext/reporting/jta-1.0.1B.jar" />
-		<pathelement location="libext/reporting/libbase-1.2.2.jar" />
-		<pathelement location="libext/reporting/libdocbundle-1.2.3.jar" />
-		<pathelement location="libext/reporting/libfonts-1.2.3.jar" />
-		<pathelement location="libext/reporting/libformat-1.2.3.jar" />
-		<pathelement location="libext/reporting/libformula-1.2.3.jar" />
-		<pathelement location="libext/reporting/libformula-ui-1.2.3.jar" />
-		<pathelement location="libext/reporting/libloader-1.2.2.jar" />
-		<pathelement location="libext/reporting/libpixie-1.2.2.jar" />
-		<pathelement location="libext/reporting/librepository-1.2.3.jar" />
-		<pathelement location="libext/reporting/libserializer-1.2.2.jar" />
-		<pathelement location="libext/reporting/libsparkline-1.2.1.jar" />
-		<pathelement location="libext/reporting/libswing-1.2.4.jar" />
-		<pathelement location="libext/reporting/libxml-1.2.2.jar" />
-		<pathelement location="libext/reporting/mdrapi-200507110943.jar" />
-		<pathelement location="libext/reporting/mof-200507110943.jar" />
-		<pathelement location="libext/reporting/nbmdr-200507110943-custom.jar" />
-		<pathelement location="libext/reporting/openide-util-200507110943.jar" />
-		<pathelement location="libext/reporting/oro-2.0.8.jar" />
-		<pathelement location="libext/reporting/pentaho-connections-2.2.3.jar" />
-		<pathelement location="libext/reporting/pentaho-cwm-1.5.4.jar" />
-		<pathelement location="libext/reporting/pentaho-metadata-3.4.2.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-core-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-drill-down-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-hibernate-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-kettle-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-mondrian-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-olap4j-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-pmd-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-reportdesigner-parser-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-sampledata-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-scripting-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-toc-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-classic-extensions-xpath-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-legacy-charts-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-legacy-functions-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/pentaho-reporting-engine-wizard-core-3.8.2-GA.jar" />
-		<pathelement location="libext/reporting/wsdl4j-qname-1.6.1.jar" />
-		<pathelement location="libext/reporting/xpp3_min-1.1.4c.jar" />
-		<pathelement location="libext/reporting/xstream-1.3.1.jar" />
-		<pathelement location="libext/rules/antlr-runtime-3.1.1.jar" />
-		<pathelement location="libext/rules/core-3.4.2.v_883_R34x.jar" />
-		<pathelement location="libext/rules/drools-api-5.0.1.jar" />
-		<pathelement location="libext/rules/drools-compiler-5.0.1.jar" />
-		<pathelement location="libext/rules/drools-core-5.0.1.jar" />
-		<pathelement location="libext/rules/mvel2-2.0.10.jar" />
-		<pathelement location="libext/salesforce/axis.jar" />
-		<pathelement location="libext/salesforce/jaxrpc.jar" />
-		<pathelement location="libext/salesforce/saaj.jar" />
-		<pathelement location="libext/salesforce/SFpartner21.0.jar" />
-		<pathelement location="libext/spring/spring-beans-2.5.6.jar" />
-		<pathelement location="libext/spring/spring-context-2.5.6.jar" />
-		<pathelement location="libext/spring/spring-context-support-2.5.6.jar" />
-		<pathelement location="libext/spring/spring-core-2.5.6.jar" />
-		<pathelement location="libext/web/jetty-6.1.21.jar" />
-		<pathelement location="libext/web/jetty-plus-6.1.21.jar" />
-		<pathelement location="libext/web/jetty-util-6.1.21.jar" />
-		<pathelement location="libext/web/servlet-api-2.5-6.1.9.jar" />
-		<pathelement location="libext/web/simple-jndi-0.11.1.jar" />
-		<pathelement location="libext/webservices/jsr173_api.jar" />
-		<pathelement location="libext/webservices/qname.jar" />
-		<pathelement location="libext/webservices/wsdl4j.jar" />
-		<pathelement location="libext/webservices/wstx-asl-3.2.9.jar" />
-		<pathelement location="libext/webservices/xalan-2.4.1.jar" />
-		<pathelement location="libext/ascsapjco3wrp.jar" />
-		<pathelement location="libext/dom4j-1.6.1.jar" />
-		<pathelement location="libext/edtftpj2.1.jar" />
-		<pathelement location="libext/ftp4che-0.7.1.jar" />
-		<pathelement location="libext/ini4j-0.5.1.jar" />
-		<pathelement location="libext/jackcess-1.2.4.jar" />
-		<pathelement location="libext/jackson-core-asl-1.5.2.jar" />
-		<pathelement location="libext/jackson-mapper-asl-1.5.2.jar" />
-		<pathelement location="libext/jakarta-oro-2.0.8.jar" />
-		<pathelement location="libext/janino.jar" />
-		<pathelement location="libext/javadbf.jar" />
-		<pathelement location="libext/javassist.jar" />
-		<pathelement location="libext/jaxen-1.1.1.jar" />
-		<pathelement location="libext/jcifs-1.3.3.jar" />
-		<pathelement location="libext/js.jar" />
-		<pathelement location="libext/jsch-0.1.44.jar" />
-		<pathelement location="libext/json_simple-1.1.jar" />
-		<pathelement location="libext/jsonpath.jar" />
-		<pathelement location="libext/jug-lgpl-2.0.0.jar" />
-		<pathelement location="libext/junit-4.7.jar" />
-		<pathelement location="libext/jxl.jar" />
-		<pathelement location="libext/jzlib-1.0.7.jar" />
-		<pathelement location="libext/ldapjdk.jar" />
-		<pathelement location="libext/livetribe-jsr223-2.0.6.jar" />
-		<pathelement location="libext/log4j-1.2.14.jar" />
-		<pathelement location="libext/mail.jar" />
-		<pathelement location="libext/mongo-2.5.3.jar" />
-		<pathelement location="libext/odfdom.jar" />
-		<pathelement location="libext/ognl-2.6.9.jar" />
-		<pathelement location="libext/saxon9-dom.jar" />
-		<pathelement location="libext/saxon9.jar" />
-		<pathelement location="libext/scannotation-1.0.2.jar" />
-		<pathelement location="libext/secondstring.jar" />
-		<pathelement location="libext/slf4j-api-1.5.8.jar" />
-		<pathelement location="libext/slf4j-jcl-1.5.8.jar" />
-		<pathelement location="libext/snakeyaml-1.7.jar" />
-		<pathelement location="libext/SNMP4J.jar" />
-		<pathelement location="libext/syslog4j-0.9.34.jar" />
-		<pathelement location="libext/trilead-ssh2-build213.jar" />
-		<pathelement location="libext/xbean.jar" />
-		<pathelement location="libext/xercesImpl-2.9.1.jar" />
+		<pathelement path="${classpath}"/>
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<fileset dir="${libext.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${kafkadb.libext.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${build}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir=".">
+			<include name="*.jar" />
+		</fileset>
 	</path>
+
 
 
 	<target name="init">
@@ -305,7 +70,6 @@
 		</manifestclasspath>
 		<echo message="${jar.class.path}" />
 		<jar jarfile="${ant.project.name}.jar">
-			
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="${main-class}" />
@@ -324,21 +88,5 @@
 	<target name="run" depends="package">
 		<java jar="${ant.project.name}.jar" fork="true" />
 	</target>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 </project>
