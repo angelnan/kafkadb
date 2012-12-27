@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2011-2012 NaN Projectes de Programari Lliure, S.L. 
+ Copyright (c) 2011-2012 NaN Projectes de Programari Lliure, S.L.
                          All Rights Reserved.
                          http://www.NaN-tic.com
 
@@ -23,7 +23,6 @@
  You should have received a copy of the GNU Affero General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.*/
-
 
 package kafkadb;
 
@@ -51,11 +50,9 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.Result;
 
 /**
- * 
  * @author angel
  */
 public class Main {
-
 
     /**
      * @param args
@@ -64,7 +61,7 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-        	String migration_filename = "migrate.cfg";
+        	String migration_filename = "migration.cfg";
         	if(args.length == 1 ){
         		migration_filename = args[0];
         	}

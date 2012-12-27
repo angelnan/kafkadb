@@ -1,3 +1,6 @@
 [submodule "wiki"]
 	path = wiki
 	url = git@bitbucket.org:angelnan/kafkadb.git/wiki
+[submodule "kafkadb_openerpv5_tryton"]
+	path = kafkadb_openerpv5_tryton
+	url = git@bitbucket.org:angelnan/kafkadb_openerpv5_tryton.git
