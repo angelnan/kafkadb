@@ -503,6 +503,9 @@ def make_dependencies(data):
     trans = data.copy()
     while trans:
         table, table_data = trans.popitem()
+        if not table_data['depends']:
+            continue
+            
         for depend in table_data['depends'].split(',') or []:
             depend = depend or None
             if depend in dependencies:
@@ -526,6 +529,15 @@ def make_config_file(targetCR, filename):
     writeConfigFile(result, config['migration_config'])
 
 
+def get_value( val, val2 ):
+    
+    if val.strip() and val2.strip():
+        return val + "," + val2
+    elif val.strip() and not val2.strip():
+        return val
+    elif not val.strip() and val2.strip():
+        return val2
+    
 def make_config(targetCr):
 
     file_list = getFiles(config['transformation_path'])
@@ -559,11 +571,16 @@ def make_config(targetCr):
                         value['transformation'],
                         result[key]['transformation'])
 
-                result[key]['depends'] = result[key]['depends'] + "," + \
-                        value['depends']
+                result[key]['depends'] = get_value(result[key]['depends'],
+                        value['depends'])
+                
                 result[key]['delete'] = str(eval(result[key]['delete']) or
                         eval(value['delete']))
+                
+                result[key]['mapping'] = get_value(result[key]['mapping'],
+                        value['mapping'])
                 continue
+                        
 
             result[key] = value.copy()
             result[key]['transformation'] = "%s/%s" % (
@@ -600,7 +617,7 @@ def migrate_sql():
         if eval(value.get('delete', 'False')):
             delete.append("DELETE FROM %s; \n" % target_table)
 
-        if value.get('mapping'):
+        if value.get('mapping') and value.get('mapping') != 'None':
             mappings = value['mapping'].split(',')
             for mapp in mappings:
                 mapping.append(
