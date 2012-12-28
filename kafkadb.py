@@ -532,11 +532,11 @@ def make_config_file(targetCR, filename):
 def get_value( val, val2 ):
     
     if val.strip() and val2.strip():
-        return val + "," + val2
+        return val.strip() + "," + val2.strip()
     elif val.strip() and not val2.strip():
-        return val
+        return val.strip()
     elif not val.strip() and val2.strip():
-        return val2
+        return val2.strip()
     
 def make_config(targetCr):
 
@@ -590,7 +590,7 @@ def make_config(targetCr):
     dependencies = make_dependencies(result)
     if None in dependencies:
         dependencies.remove(None)
-    result['transformation_order'] = ",".join(dependencies)
+    result['transformation_order'] = ",".join([x.strip() for x in dependencies])
     return result
 
 
