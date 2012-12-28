@@ -503,11 +503,13 @@ def make_dependencies(data):
     trans = data.copy()
     while trans:
         table, table_data = trans.popitem()
+        print 'table:',table
         if not table_data['depends']:
             continue
             
         for depend in table_data['depends'].split(',') or []:
-            depend = depend or None
+            depend = depend.strip() or None
+            print "depend",depend
             if depend in dependencies:
                 continue
             if table in dependencies:
@@ -519,6 +521,9 @@ def make_dependencies(data):
 
         if not table in dependencies:
             dependencies.append(table)
+    for tran in data:        
+        if not tran in dependencies:
+            dependencies.append(tran)
 
     return dependencies
 
