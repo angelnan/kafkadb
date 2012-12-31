@@ -534,8 +534,13 @@ def make_config_file(targetCR, filename):
 
 
 def get_value( val, val2 ):
-    
-    if val.strip() and val2.strip():
+   
+    if val is None:
+        val = ''
+    if val2 is None:
+        val2 = ''
+         
+    if val and val.strip() and val2 and val2.strip():
         return val.strip() + "," + val2.strip()
     elif val.strip() and not val2.strip():
         return val.strip()
