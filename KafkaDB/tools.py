@@ -37,7 +37,7 @@ import sys
 import subprocess
 import ConfigParser
 
-def read_kettle_properties(filename='/home/angel/.kettle/kettle.properties'):
+def read_kettle_properties(filename='kettle.properties'):
     config ={}
     with open(filename) as f:
         for line in f:
