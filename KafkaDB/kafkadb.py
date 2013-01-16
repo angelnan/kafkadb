@@ -694,11 +694,12 @@ def migrate(targetCR):
 
     print "executing Scripts"
     data = readConfigFile('migration.cfg')
-    scripts = data['script']['script']
-    print scripts
-    for script in scripts.split(","):
-        subprocess.call(["python", script])
-        print "script:",script
+    if data.get('script'):
+        scripts = data['script']['script']
+        print scripts
+        for script in scripts.split(","):
+            subprocess.call(["python", script])
+            print "script:",script
 
 
 
