@@ -3,7 +3,7 @@
 
 ##############################################################################
 #
-# Copyright (c) 2011-2012 NaN Projectes de Programari Lliure, S.L.
+# Copyright (c) 2011-2013 NaN Projectes de Programari Lliure, S.L.
 # http://www.NaN-tic.com
 # All Rights Reserved.
 #
@@ -37,6 +37,8 @@ import sys
 import subprocess
 import ConfigParser
 
+from tools import *
+
 config = {}
 
 
@@ -62,6 +64,7 @@ class KafkaModel(object):
             'source': None,
             'target': None,
             'insert': False,
+            'script': False,
         }
 
         self.getFields()
@@ -112,24 +115,6 @@ def moduleFactory(cursor, name, program, version=None):
         print "not suported yet"
         return None
 
-
-#TOOLS
-def readConfigFile(filename):
-    if not os.path.exists(filename):
-        return {}
-
-    config = ConfigParser.ConfigParser()
-    f = open(filename, 'r')
-    config.readfp(f)
-
-    result = {}
-    for section in config.sections():
-        result[section] = {}
-        for option in config.options(section):
-            result[section][option] = config.get(section, option)
-
-    f.close()
-    return result
 
 
 class Module(object):
@@ -205,37 +190,6 @@ class Module(object):
 
         writeConfigFile(data, self.filename)
 
-
-#TOOLS
-def writeConfigFile(config, filename):
-
-    config_parser = ConfigParser.ConfigParser()
-    dirname = os.path.dirname(filename)
-
-    if dirname and not os.path.exists(dirname):
-        os.makedirs(dirname)
-
-    f = open(filename, 'w+')
-    config_parser.readfp(f)
-
-    sorted_list = sorted(config.keys())
-    for key in sorted_list:
-        config_parser.add_section(key)
-
-    if 'transformation_order' in config:
-        order = config.pop('transformation_order')
-        config_parser.set('transformation_order', 'transformation_order',
-                order)
-
-    for key, value in config.iteritems():
-        for k, v in value.iteritems():
-            if (k == 'source' and v == 'None') or (k == 'target' and v == 'None'):
-                config_parser.remove_option(key, k)
-            else:
-                config_parser.set(key, k, v)
-
-    config_parser.write(f)
-    f.close()
 
 
 class OpenerpModule(Module):
@@ -357,6 +311,7 @@ def parse_arguments(arguments):
 
 
 #TOOLS
+#TOOD: unused
 def getFields(cursor):
     query = """ SELECT
             a.attname as field,
@@ -477,6 +432,7 @@ def getModuleDiff(source, target):
             'source': None,
             'target': None,
             'insert': False,
+            'script': False,
             }
 
         if table in source and table in target:
@@ -557,6 +513,8 @@ def make_config(targetCr):
     if dirname and not os.path.exists(dirname):
         os.makedirs(dirname)
 
+    script = []
+
     for config_file in config_file_list:
         module = os.path.dirname(config_file)
         module_name = module.split('/')[-1]
@@ -566,6 +524,12 @@ def make_config(targetCr):
         data = readConfigFile(config_file)
         for key, value in data.iteritems():
             if value.get('migrate') == 'False':
+                continue
+
+            if value.get('script') and value.get('script') != 'False':
+                script_path=config['transformation_path']
+                for script_file in value['script'].split(","):
+                    script += [os.path.join(script_path, module, script_file)]
                 continue
 
             if key in result:
@@ -590,7 +554,8 @@ def make_config(targetCr):
                         value['mapping'])
                 continue
                         
-
+            if not value.get('transformation'):
+                continue
             result[key] = value.copy()
             result[key]['transformation'] = "%s/%s" % (
                     module,
@@ -600,6 +565,7 @@ def make_config(targetCr):
     if None in dependencies:
         dependencies.remove(None)
     result['transformation_order'] = ",".join([x.strip() for x in dependencies])
+    result['script'] = ",".join(script)
     return result
 
 
@@ -617,7 +583,7 @@ def migrate_sql():
     for key, value in data.iteritems():
         target_table = value.get('target', key)
 
-        if key == 'transformation_order':
+        if key in ['transformation_order','script']:
             continue
 
         if value.get('migrate') == 'False':
@@ -726,32 +692,31 @@ def migrate(targetCR):
     print "Restoring Constraints"
     updateConstraints(targetCR, False)
 
+    print "executing Scripts"
+    data = readConfigFile('migration.cfg')
+    scripts = data['script']['script']
+    print scripts
+    for script in scripts.split(","):
+        subprocess.call(["python", script])
+        print "script:",script
+
+
+
 
 if __name__ == '__main__':
 
     settings = parse_arguments(sys.argv)
 
-    with open('kettle.properties') as f:
-        for line in f:
-            tokens = line.split('=')
-            config[tokens[0].strip()] = "=".join([x.strip() for x in tokens[1:]])
+    config = read_kettle_properties()
 
     if not os.path.exists(config['sql_files']):
         os.makedirs(config['sql_files'])
+
     open(config['sql_copy'], 'w').close()
 
     # Config
-    source_db = psycopg2.connect(
-		dbname = config['source'],
-		host = config['source_host'],
-		user = config['source_user'],
-		password = config['source_password'])
-    target_db = psycopg2.connect(
-        dbname = config['target'],
-        host = config['target_host'],
-        user = config['target_user'],
-        password = config['target_password'])
-
+    source_db = get_source_connection(config)
+    target_db = get_target_connection(config)
     target_db.set_session(deferrable=True)
 
     transformation_path = config['transformation_path']
@@ -788,5 +753,6 @@ if __name__ == '__main__':
 
     if settings.make:
         make_config_file(targetCR, config['migration_config'])
+
     source_db.close()
     target_db.close()

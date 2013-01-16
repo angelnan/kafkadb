@@ -2,4 +2,4 @@
 
 export KETTLE_HOME=.
 
-./kafkadb.py $*
+./KafkaDB/kafkadb.py $*
