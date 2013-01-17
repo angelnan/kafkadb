@@ -710,6 +710,12 @@ if __name__ == '__main__':
 
     config = read_kettle_properties()
 
+    if config.get('start_scripts') and settings.get('migrate'):
+        scripts = config.get('start_scripts')
+        for script in scripts.split(","):
+            print "Start Python Script:",script
+            subprocess.call(["python", script])
+
     if not os.path.exists(config['sql_files']):
         os.makedirs(config['sql_files'])
 
@@ -757,3 +763,9 @@ if __name__ == '__main__':
 
     source_db.close()
     target_db.close()
+
+    if config.get('end_scripts') and settings.get('migrate'):
+        scripts = config.get('end_scripts')
+        for script in scripts.split(","):
+            print "End Python Script:",script
+            subprocess.call(["python", script])
