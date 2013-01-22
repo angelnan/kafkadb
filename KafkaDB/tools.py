@@ -48,15 +48,17 @@ def read_kettle_properties(filename='kettle.properties'):
 
 def get_source_connection(config):
     return  psycopg2.connect(
-		dbname = config['source'],
-		host = config['source_host'],
-		user = config['source_user'],
-		password = config['source_password'])
+        dbname = config['source'],
+        host = config['source_host'],
+        port = config['source_port'],
+        user = config['source_user'],
+        password = config['source_password'])
 
 def get_target_connection(config):
     return psycopg2.connect(
         dbname = config['target'],
         host = config['target_host'],
+        port = config['target_port'],
         user = config['target_user'],
         password = config['target_password'])
 
