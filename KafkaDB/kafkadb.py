@@ -694,11 +694,12 @@ def migrate(targetCR):
 
     print "executing Scripts"
     data = readConfigFile('migration.cfg')
-    scripts = data['script']['script']
-    print scripts
-    for script in scripts.split(","):
-        subprocess.call(["python", script])
-        print "script:",script
+    if data.get('script'):
+        scripts = data['script']['script']
+        print scripts
+        for script in scripts.split(","):
+            subprocess.call(["python", script])
+            print "script:",script
 
 
 
@@ -708,6 +709,12 @@ if __name__ == '__main__':
     settings = parse_arguments(sys.argv)
 
     config = read_kettle_properties()
+
+    if config.get('start_scripts') and settings.get('migrate'):
+        scripts = config.get('start_scripts')
+        for script in scripts.split(","):
+            print "Start Python Script:",script
+            subprocess.call(["python", script])
 
     if not os.path.exists(config['sql_files']):
         os.makedirs(config['sql_files'])
@@ -756,3 +763,9 @@ if __name__ == '__main__':
 
     source_db.close()
     target_db.close()
+
+    if config.get('end_scripts') and settings.get('migrate'):
+        scripts = config.get('end_scripts')
+        for script in scripts.split(","):
+            print "End Python Script:",script
+            subprocess.call(["python", script])

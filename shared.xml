@@ -6,7 +6,7 @@
     <type>POSTGRESQL</type>
     <access>Native</access>
     <database>${source}</database>
-    <port>5432</port>
+    <port>${source_port}</port>
     <username>${source_user}</username>
     <password>Encrypted </password>
     <servername/>
@@ -29,7 +29,7 @@
     <type>POSTGRESQL</type>
     <access>Native</access>
     <database>${target}</database>
-    <port>5432</port>
+    <port>${target_port}</port>
     <username>${target_user}</username>
     <password>Encrypted </password>
     <servername/>
