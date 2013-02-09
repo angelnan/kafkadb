@@ -251,7 +251,7 @@ public class Migrate {
 			}
 		}
 			
-		transMeta.writeXML("/tmp/output/" + source + "-" + target + ".ktr");			
+		transMeta.writeXML("/tmp/output/" + source + "-" + target + "-debug.ktr");			
 		
 		log.info("Final Text");
 
@@ -326,14 +326,14 @@ public class Migrate {
 			// output fields from that step.
 			
 			log.info("Get previous Fields:"+sourceJoin.getName()); 
-			fromFields = getPreviousFields(transMeta, selectStep);
+			fromFields = getPreviousFields(transMeta, toStep);
 			log.info("Get Target FIelds"); 
 			selectFields =  getTargetFields(fromFields, target);
 			  
 			log.info("allocate memory");
 			selectMeta.allocate(selectFields.length, 0, 0);
 			selectMeta.setSelectName(selectFields); 
-			tf = getFileFields(transMeta, selectStep, target);
+			tf = getFileFields(transMeta, toStep, target);
 			fileOutput.setOutputFields(tf);			
 
 		}
