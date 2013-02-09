@@ -432,7 +432,8 @@ def getModuleDiff(source, target):
             'source': None,
             'target': None,
             'insert': False,
-            'script': False,
+            'start_script': False,
+            'end_script': False,
             }
 
         if table in source and table in target:
@@ -452,43 +453,6 @@ def getModuleDiff(source, target):
         else:
             result[table]['on'] = 'target'
     return result.copy()
-
-
-
-def make_dependencies2(data):
-    dependencies = []
-    trans = data.copy()
-    while trans:
-        table, table_data = trans.popitem()
-        if not table_data['depends']:
-            continue
-            
-        print "dependencies:",dependencies
-        table_dependency = table_data['depends'].split(',') or []
-
-        for depend in table_dependency:
-            depend = depend.strip() or None
-
-            if depend in dependencies:
-                del dependencies[dependencies.index(depend)]
-#                continue
-            print table,depend
-            if table in dependencies:
-                print "insert"
-                index = dependencies.index(table)
-                dependencies.insert(index, depend)
-            else:
-                if not depend is None:
-                    print "add"
-                    dependencies.append(depend)
-
-        if not table in dependencies:
-            dependencies.append(table)
-    for tran in data:        
-        if not tran in dependencies:
-            dependencies.append(tran)
-
-    return dependencies
 
 
 
@@ -551,7 +515,8 @@ def make_config(targetCr):
     if dirname and not os.path.exists(dirname):
         os.makedirs(dirname)
 
-    script = []
+    start_script = []
+    end_script = []
 
     for config_file in config_file_list:
         module = os.path.dirname(config_file)
@@ -561,13 +526,26 @@ def make_config(targetCr):
             continue
         data = readConfigFile(config_file)
         for key, value in data.iteritems():
+            
             if value.get('migrate') == 'False':
                 continue
 
-            if value.get('script') and value.get('script') != 'False':
+            if value.get('start_script') and \
+                    value.get('start_script') != 'False':
+
                 script_path=config['transformation_path']
-                for script_file in value['script'].split(","):
-                    script += [os.path.join(script_path, module, script_file)]
+                for script_file in value['start_script'].split(","):
+                    start_script += [os.path.join(script_path, 
+                        module, script_file)]
+                continue
+
+            if value.get('end_script') and \
+                    value.get('end_script') != 'False':
+
+                script_path=config['transformation_path']
+                for script_file in value['end_script'].split(","):
+                    end_script += [os.path.join(script_path, 
+                        module, script_file)]
                 continue
 
             if key in result:
@@ -603,11 +581,14 @@ def make_config(targetCr):
     if None in dependencies:
         dependencies.remove(None)
     result['transformation_order'] = ",".join([x.strip() for x in dependencies])
-    result['script'] = ",".join(script)
+    result['start_script'] = ",".join(start_script)
+    result['end_script'] = ",".join(end_script)
+
     return result
 
 
 def migrate_sql():
+
     data = readConfigFile('migration.cfg')
 
     delete = []
@@ -621,7 +602,7 @@ def migrate_sql():
     for key, value in data.iteritems():
         target_table = value.get('target', key)
 
-        if key in ['transformation_order','script']:
+        if key in ['transformation_order','start_script','end_script']:
             continue
 
         if value.get('migrate') == 'False':
@@ -661,12 +642,24 @@ def migrate_sql():
     f.close()
 
 
+def executeScripts(target='start_script'):
+
+    migration = readConfigFile('migration.cfg')
+    if migration.get(target):
+        scripts = migration.get(target)['script']
+        print scripts
+        for script in scripts.split(","):
+            print "Python Script(%s): "%(target),script
+            subprocess.call(["python", script])
+
 def migrate(targetCR):
 
     #Execute java process
-
     if not os.path.exists(config['sql_files']):
         os.makedirs(config['sql_files'])
+
+    print "Execute start scripts"
+    executeScripts()
 
     print "START...."
     migrate_sql()
@@ -730,14 +723,14 @@ def migrate(targetCR):
     print "Restoring Constraints"
     updateConstraints(targetCR, False)
 
-    print "executing Scripts"
-    data = readConfigFile('migration.cfg')
-    if data.get('script'):
-        scripts = data['script']['script']
-        print scripts
-        for script in scripts.split(","):
-            subprocess.call(["python", script])
-            print "script:",script
+#    print "executing Scripts"
+#    data = readConfigFile('migration.cfg')
+#    if data.get('script'):
+#        scripts = data['script']['script']
+#        print scripts
+#        for script in scripts.split(","):
+#            subprocess.call(["python", script])
+#            print "script:",script
 
 
 

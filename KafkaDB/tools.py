@@ -101,9 +101,13 @@ def writeConfigFile(config, filename):
         config_parser.set('transformation_order', 'transformation_order',
                 order)
 
-    if 'script' in config:
-        script = config.pop('script')
-        config_parser.set('script','script',script)
+    if 'start_script' in config:
+        script = config.pop('start_script')
+        config_parser.set('start_script','script',script)
+    
+    if 'end_script' in config:
+        script = config.pop('end_script')
+        config_parser.set('end_script','script',script)
 
     for key, value in config.iteritems():
         for k, v in value.iteritems():
