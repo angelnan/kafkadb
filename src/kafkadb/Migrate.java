@@ -26,42 +26,39 @@
 package kafkadb;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.trans.TransMeta;
-
-import org.pentaho.di.core.database.*;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entry.JobEntryCopy;
-import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.steps.tableinput.*;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.textfileoutput.*;
-import org.pentaho.di.trans.TransHopMeta;
-import org.pentaho.di.job.Job;
-import java.lang.String;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.lang.StringUtils;
+import org.ini4j.ConfigParser;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransHopMeta;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
-import java.util.Arrays;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import java.util.logging.*;
-import org.ini4j.ConfigParser;
+import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
+import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 
 /**
- *
+ * 
  * @author angel
  */
 
@@ -83,15 +80,24 @@ public class Migrate {
 	static HashMap<String, TransMeta> transMap = new HashMap<String, TransMeta>();
 	static HashMap<TransMeta, Trans> transMetaMap = new HashMap<TransMeta, Trans>();
 
+	static ConfigParser config = new ConfigParser();
+
 	// static private Logger log = Logger.getLogger(Migrate.class + "");
 	static private Logger log = Logger.getLogger("KafkaDB");
 
 	public static List<String> getPreviousFields(TransMeta transMeta,
 			StepMeta step) throws KettleStepException, KettleException {
+
 		// Get fields input from step.
 		List<String> fieldList = new ArrayList<String>();
 
-		RowMetaInterface rmi = transMeta.getStepFields(step);
+		log.info("Get Previous fields:" + step.getName());
+		RowMetaInterface rmi = transMeta.getPrevStepFields(step);
+		if (rmi==null && rmi.isEmpty()) 
+			return fieldList;
+		
+		
+		log.info("Get previous fields rmi:" + rmi);
 		String[] fields = rmi.getFieldNames();
 		for (int i = 0; i < fields.length; i++) {
 			fieldList.add(fields[i]);
@@ -158,45 +164,17 @@ public class Migrate {
 		return fileFields.toArray(new TextFileField[0]);
 	}
 
-	public static StepMeta findSource(TransMeta transMeta) {
-		List<StepMeta> hopsteps = transMeta.getTransHopSteps(false);
-		for (Iterator it = hopsteps.iterator(); it.hasNext();) {
-			StepMeta step = (StepMeta) it.next();
-			log.info("FIND SOURCE:" + step.getName());
-			if (step.getTypeId().equals("Dummy")) {
-				String[] names = transMeta.getPrevStepNames(step.getName());
-				if (names.length == 0) {
-					return step;
-				}
-			}
-		}
-		return null;
-	}
-
-	public static StepMeta findTarget(TransMeta transMeta) {
-
-		List<StepMeta> hopsteps = transMeta.getTransHopSteps(false);
-		Iterator it = hopsteps.iterator();
-		while (it.hasNext()) {
-			StepMeta step = (StepMeta) it.next();
-			if (step == null)
-				continue;
-			if (step.getTypeId().equals("Dummy")) {
-				String[] names = transMeta.getNextStepNames(step);
-				if (names.length == 0) {
-					return step;
-				}
-			}
-		}
-		return null;
-	}
 
 	public static TransMeta makeTrans(String source, String target,
 			List<String> filename) throws Exception {
 
+		
 		// Prepare Transformation, load kettle shared file and make
 		// available to transformation.
 		TransMeta transMeta = new TransMeta();
+		transMeta.clear();
+		transMeta.clearCaches();
+		
 		transMeta.setName(source + "_" + target);
 		transMeta.setSharedObjects(shared);
 		transMeta.readSharedObjects();
@@ -218,11 +196,14 @@ public class Migrate {
 		fromStep.setLocation(x, y);
 		fromStep.setDraw(true);
 
+		
+		transMeta.addStep(fromStep);
+		
+		
 		// Get Fields from Input step.
 		List<String> fromFields = getPreviousFields(transMeta, fromStep);
 		log.info("Previous fields:" + fromFields.toString());
 		log.info("Get target fields table:" + target);
-
 		// Get Target field from table
 		String[] selectFields = getTargetFields(fromFields, target);
 
@@ -230,81 +211,48 @@ public class Migrate {
 
 		log.info("filenames:" + filename.toString());
 		// LOAD TRANS NODE
-        int yfile = 0;
+		StepMeta sourceJoin=fromStep;
+		
 		if (filename != null && filename.size() > 0) {
 
-			List<StepMeta> join = new ArrayList<StepMeta>();
-			List<String> depends = new ArrayList<String>();
-			for (Iterator<String> it = filename.iterator(); it.hasNext();) {
-
-				String file = (String) it.next();
-				log.info("****************************************************Process File:"
-						+ file);
-
-				// Make ktr
-				TransMeta read = new TransMeta(file);
+			for( Iterator<String> filenameIt = filename.iterator(); filenameIt.hasNext();){
+				String file = (String) filenameIt.next();
+				log.info("**************** Process File:"+ file);
+		
+				// Load ktr
+				TransMeta readktr = new TransMeta(file);
 				// Get list of Hops
-				List<StepMeta> s = read.getTransHopSteps(true);
+                for (int j = 0; j < readktr.nrTransHops(); j++) {
+                	TransHopMeta thm = readktr.getTransHop(j);
+                	transMeta.addTransHop(thm);
+                }
 
-				StepMeta jsource = null;
-				StepMeta jtarget = null;
-
-				// Look for dummy source and target steps to make inheritance
-				// and join to table source and target steps.
-				for (Iterator<StepMeta> it2 = s.iterator(); it2.hasNext();) {
-
-					StepMeta sp = it2.next();
-					sp.setName(transMeta.getAlternativeStepname(sp.getName()));
-					log.info("Step:" + sp.getName());
-
-					if (sp.getName().contains("target"))
-						jtarget = sp;
-
-					if (sp.getName().contains("source")) {
-						log.info(sp.getStepID().toString());
-						// if not dummy type no selected as source.
-						if (!sp.getStepID().toString().equals("Dummy")) {
-							fromStep = sp;
-							continue;
-						}
-						// If first file processed, not selected as source
-						// because inheritance.
-						if (filename.indexOf(file) > 0) {
-							jsource = sp;
-						}
-					}
-                    sp.setLocation( sp.getLocation().x, sp.getLocation().y + yfile);
-					transMeta.addStep(sp);
+                StepMeta sourceStepMeta = readktr.findStep("source");
+				StepMeta targetStepMeta = readktr.findStep("target"); 
+				
+				
+                List<StepMeta> steps = readktr.getTransHopSteps(true);				
+				for (StepMeta temp : steps) {
+					temp.setName(transMeta.getAlternativeStepname(temp.getName()));
+					temp.setLocation(temp.getLocation().x,temp.getLocation().y * (1+filename.indexOf(file))*2);
+					log.info("adding step:"+temp.getName());
+					transMeta.addStep(temp);					
 				}
-                yfile += 200;
-
-				// Add list to steps to add hops between.
-				if (jsource != null && filename.indexOf(file) > 0)
-					join.add(jsource);
-
-				if (jtarget != null)
-					join.add(jtarget);
-
-				// Add all hops to transformation readed from files.
-				for (int j = 0; j < read.nrTransHops(); j++) {
-					TransHopMeta thm = read.getTransHop(j);
-					transMeta.addTransHop(thm);
+				
+				if(sourceStepMeta == null || targetStepMeta == null){
+					log.info("\n\nNo Source or Target Step finded on file "+file);
 				}
-
-				// Add all hops to join differents ktr files in one ktr.
-				for (Iterator<StepMeta> it3 = join.iterator(); it3.hasNext();) {
-					StepMeta joinSource = (StepMeta) it3.next();
-					if (!it3.hasNext())
-						break;
-					StepMeta joinTarget = (StepMeta) it3.next();
-					log.info("hooooooop =====>" + joinSource.getName() + "-"
-							+ joinTarget.getName());
-					TransHopMeta fs = new TransHopMeta(joinSource, joinTarget);
-					transMeta.addTransHop(fs);
-				}
+				 
+				TransHopMeta fs = new TransHopMeta(sourceJoin, sourceStepMeta);
+				log.info("Make hop: "+sourceJoin.getName() +"-"+ sourceStepMeta.getName());
+				transMeta.addTransHop(fs);				
+				sourceJoin = targetStepMeta;
+				
 			}
 		}
-
+			
+		transMeta.writeXML("/tmp/output/" + source + "-" + target + ".ktr");			
+		
 		log.info("Final Text");
 
 		// Add Final text file output.
@@ -318,8 +266,7 @@ public class Migrate {
 		fileOutput.setSeparator("|");
 		fileOutput.setEnclosure("\"");
 		fileOutput.setEnclosureForced(true);
-		fileOutput
-				.setFileCompression(TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE]);
+		fileOutput.setFileCompression(TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE]);
 
 		log.info("Select Values");
 		// SelectValues
@@ -335,19 +282,21 @@ public class Migrate {
 		x += xoffset;
 		// Target Step.
 		StepMeta toStep = new StepMeta(target, (StepMetaInterface) fileOutput);
-		toStep.setLocation(x, y);
+		toStep.setLocation(0, 0);
 		toStep.setDraw(true);
+		
 
 		// Add Required Steps to trans.
-		transMeta.addStep(fromStep);
+		
 		transMeta.addStep(selectStep);
 		transMeta.addStep(toStep);
 
+		
 		// Add a hop between the two steps...
 		if (filename == null || filename.size() == 0) {
 			// If no ktr file
 			// workflow: [input]->[select]->[output]
-			TransHopMeta fs = new TransHopMeta(fromStep, selectStep);
+			TransHopMeta fs = new TransHopMeta(sourceJoin, selectStep);
 			transMeta.addTransHop(fs);
 			TransHopMeta st = new TransHopMeta(selectStep, toStep);
 			transMeta.addTransHop(st);
@@ -355,49 +304,42 @@ public class Migrate {
 			selectMeta.allocate(selectFields.length, 0, 0);
 			selectMeta.setSelectName(selectFields);
 
-			tf = getFileFields(transMeta, fromStep, target);
+			tf = getFileFields(transMeta, sourceJoin, target);
 			fileOutput.setOutputFields(tf);
 
 		} else {
 			// When any file specified.
 			// Input -> [ktr files] -> select -> text output
 
-			log.info("Search source");
-			// Find source dummy step to know where ktr starts.
-			StepMeta input_connect_step = findSource(transMeta);
-
-			if (input_connect_step != null) {
-				log.info(" add hop to source");
-				TransHopMeta ifs = new TransHopMeta(fromStep,
-						input_connect_step);
-				transMeta.addTransHop(ifs);
-			}
-
-			// Find target dummy step to know las step.
-			StepMeta output_connect_step = findTarget(transMeta);
-			// TODO: ensure this cases when no dummy target is specified
-			// on ktr, and specifes and output
-
-			if (output_connect_step == null)
-				return transMeta;
-
-			TransHopMeta ofs = new TransHopMeta(output_connect_step, selectStep);
+			TransHopMeta ofs = new TransHopMeta(sourceJoin,selectStep);
 			transMeta.addTransHop(ofs);
+			log.info("Make hop: "+sourceJoin.getName() +"-"+ selectStep.getName());
+
+			
 			TransHopMeta st = new TransHopMeta(selectStep, toStep);
+			log.info("Make hop: "+selectStep.getName() +"-"+ toStep.getName());
 			transMeta.addTransHop(st);
 
+			
+			
 			// If Transformation, then got the dummy output and look for
 			// output fields from that step.
-			fromFields = getPreviousFields(transMeta, output_connect_step);
-			selectFields = getTargetFields(fromFields, target);
-
+			
+			log.info("Get previous Fields:"+sourceJoin.getName()); 
+			fromFields = getPreviousFields(transMeta, selectStep);
+			log.info("Get Target FIelds"); 
+			selectFields =  getTargetFields(fromFields, target);
+			  
+			log.info("allocate memory");
 			selectMeta.allocate(selectFields.length, 0, 0);
-			selectMeta.setSelectName(selectFields);
-
-			tf = getFileFields(transMeta, output_connect_step, target);
-			fileOutput.setOutputFields(tf);
+			selectMeta.setSelectName(selectFields); 
+			tf = getFileFields(transMeta, selectStep, target);
+			fileOutput.setOutputFields(tf);			
 
 		}
+		
+		
+		
 		// Generate output file
 		String[] f = new String[tf.length];
 		for (int i = 0; i < tf.length; i++) {
@@ -462,9 +404,6 @@ public class Migrate {
 		 * Execute transformations
 		 */
 
-		ConfigParser config = new ConfigParser();
-		config.read(filename);
-
 		// Get Order to execute transformations
 		List<TransMeta> executed = new ArrayList<TransMeta>();
 		String[] execOrder = config.get("transformation_order",
@@ -510,11 +449,13 @@ public class Migrate {
 
 	}
 
+
 	public static void start(String migration_filename, String kettle_shared)
 			throws Exception {
 
 		log.info("Start Kettle process");
 		Migrate.init(kettle_shared);
+		Migrate.config.read(migration_filename);
 		Migrate.readConfig(migration_filename);
 		Migrate.writeFile();
 
