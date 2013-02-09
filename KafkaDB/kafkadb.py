@@ -454,7 +454,8 @@ def getModuleDiff(source, target):
     return result.copy()
 
 
-def make_dependencies(data):
+
+def make_dependencies2(data):
     dependencies = []
     trans = data.copy()
     while trans:
@@ -462,16 +463,23 @@ def make_dependencies(data):
         if not table_data['depends']:
             continue
             
-        for depend in table_data['depends'].split(',') or []:
+        print "dependencies:",dependencies
+        table_dependency = table_data['depends'].split(',') or []
+
+        for depend in table_dependency:
             depend = depend.strip() or None
 
             if depend in dependencies:
-                continue
+                del dependencies[dependencies.index(depend)]
+#                continue
+            print table,depend
             if table in dependencies:
+                print "insert"
                 index = dependencies.index(table)
                 dependencies.insert(index, depend)
             else:
                 if not depend is None:
+                    print "add"
                     dependencies.append(depend)
 
         if not table in dependencies:
@@ -481,6 +489,42 @@ def make_dependencies(data):
             dependencies.append(tran)
 
     return dependencies
+
+
+
+def make_dependencies(data):
+    order = []
+    trans = data.copy()
+    while trans:
+        table, table_data = trans.popitem()
+        depends = table_data['depends'] and \
+                table_data['depends'].split(',') or []
+        depends = list(set([x.strip(' ') for x in depends]))
+       
+        a = order[:]
+        b = []
+#        print "table:",table, "order:", order
+#        raw_input("Press Enter to continue...")
+        if table in order:
+            a = order[:order.index(table)]
+            b = order[order.index(table):]
+        else:
+            b = [table]
+
+#        print "a:",a, "b:",b
+#        raw_input("Press Enter to continue...")
+        for depend in depends:
+            if depend in b:
+                b.remove(depend)
+            if not depend in a:
+                a.append(depend)
+
+        order = a + b
+#        print order
+
+#    print order
+    return order
+
 
 
 def make_config_file(targetCR, filename):
