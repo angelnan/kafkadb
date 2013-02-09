@@ -503,16 +503,12 @@ def make_dependencies(data):
        
         a = order[:]
         b = []
-#        print "table:",table, "order:", order
-#        raw_input("Press Enter to continue...")
         if table in order:
             a = order[:order.index(table)]
             b = order[order.index(table):]
         else:
             b = [table]
 
-#        print "a:",a, "b:",b
-#        raw_input("Press Enter to continue...")
         for depend in depends:
             if depend in b:
                 b.remove(depend)
@@ -520,9 +516,7 @@ def make_dependencies(data):
                 a.append(depend)
 
         order = a + b
-#        print order
 
-#    print order
     return order
 
 
