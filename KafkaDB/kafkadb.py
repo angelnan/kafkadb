@@ -719,6 +719,9 @@ def migrate(targetCR):
     target_db.commit()
     print "upload data FINISH"
 
+    print "Execute start scripts"
+    executeScripts('end_scripts')
+
     #Set constraints as undeferred
     print "Restoring Constraints"
     updateConstraints(targetCR, False)
