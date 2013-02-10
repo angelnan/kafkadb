@@ -762,7 +762,6 @@ if __name__ == '__main__':
 
     transformation_path = config['transformation_path']
 
-    settings = parse_arguments(sys.argv)
 
     sourceCR = source_db.cursor()
     targetCR = target_db.cursor()
