@@ -397,6 +397,8 @@ def getFiles(path='model-ktr'):
 
     fileList = []
     for root, subFolders, files in os.walk(path):
+        files = [f for f in files if not f[0] == '.']
+        subFolders[:] = [d for d in subFolders if not d[0] == '.']
         for file in files:
             fileList.append(os.path.join(root, file))
         for subfolder in subFolders:
