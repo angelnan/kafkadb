@@ -711,9 +711,10 @@ def migrate(targetCR):
     print "Upload Data start..."
     targetCR.execute("SET CONSTRAINTS ALL DEFERRED;")
 
-    print "upload finish, comitting..."
-    print copy_sql
-    targetCR.execute(copy_sql)
+    if copy_sql:
+        print "upload finish, comitting..."
+        print copy_sql
+        targetCR.execute(copy_sql)
 
     print "enable triggers again"
     print finish_sql
