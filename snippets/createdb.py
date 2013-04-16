@@ -60,6 +60,7 @@ if __name__ == '__main__':
 
     process = subprocess.Popen("""
         export PGPASSWORD=%(password)s
+        psql %(dbname)s -U %(user)s --quiet -c "select pg_terminate_backend(procpid) from pg_stat_activity where procpid <> pg_backend_pid( ) and datname='%(dbname)s'"
         dropdb -U %(user)s %(dbname)s
         createdb -U %(user)s %(dbname)s -O %(user)s
         psql -U %(user)s %(dbname)s < %(sqlfile)s
