@@ -65,6 +65,7 @@ class KafkaModel(object):
             'target': None,
             'insert': False,
             'script': False,
+            'parent': False,
         }
 
         self.getFields()
@@ -436,6 +437,7 @@ def getModuleDiff(source, target):
             'insert': False,
             'start_script': False,
             'end_script': False,
+            'parent': False,
             }
 
         if table in source and table in target:
@@ -445,6 +447,7 @@ def getModuleDiff(source, target):
                 thash = target[table]['hash']
                 if shash == thash:
                     continue
+                resutl[table]['parent'] = False
                 result[table]['migrate'] = False
                 result[table]['source'] = [x[0] for x in list(set(shash) - set(thash))]
                 result[table]['target'] = [x[0] for x in list(set(thash) - set(shash))]
@@ -466,7 +469,7 @@ def make_dependencies(data):
         depends = table_data['depends'] and \
                 table_data['depends'].split(',') or []
         depends = list(set([x.strip(' ') for x in depends]))
-       
+
         a = order[:]
         b = []
         if table in order:
@@ -494,19 +497,19 @@ def make_config_file(targetCR, filename):
 
 
 def get_value( val, val2 ):
-   
+
     if val is None:
         val = ''
     if val2 is None:
         val2 = ''
-         
+
     if val and val.strip() and val2 and val2.strip():
         return val.strip() + "," + val2.strip()
     elif val.strip() and not val2.strip():
         return val.strip()
     elif not val.strip() and val2.strip():
         return val2.strip()
-    
+
 def make_config(targetCr):
 
     file_list = getFiles(config['transformation_path'])
@@ -528,7 +531,7 @@ def make_config(targetCr):
             continue
         data = readConfigFile(config_file)
         for key, value in data.iteritems():
-            
+
             if value.get('migrate') == 'False':
                 continue
 
@@ -537,7 +540,7 @@ def make_config(targetCr):
 
                 script_path=config['transformation_path']
                 for script_file in value['start_script'].split(","):
-                    start_script += [os.path.join(script_path, 
+                    start_script += [os.path.join(script_path,
                         module, script_file)]
                 continue
 
@@ -546,7 +549,7 @@ def make_config(targetCr):
 
                 script_path=config['transformation_path']
                 for script_file in value['end_script'].split(","):
-                    end_script += [os.path.join(script_path, 
+                    end_script += [os.path.join(script_path,
                         module, script_file)]
                 continue
 
@@ -557,21 +560,21 @@ def make_config(targetCr):
                         module,
                         value['transformation'])
                 else:
-                    result[key]['transformation'] = "%s/%s,%s" % ( 
+                    result[key]['transformation'] = "%s/%s,%s" % (
                         module,
                         value['transformation'],
                         result[key]['transformation'])
-
                 result[key]['depends'] = get_value(result[key]['depends'],
                         value['depends'])
-                
+
                 result[key]['delete'] = str(eval(result[key]['delete']) or
                         eval(value['delete']))
-                
+                result[key]['parent'] = str(eval(result[key].get('parent','False')) or
+                        eval(value.get('parent','False')))
                 result[key]['mapping'] = get_value(result[key]['mapping'],
                         value['mapping'])
                 continue
-                        
+
             if not value.get('transformation'):
                 continue
             result[key] = value.copy()
@@ -651,8 +654,50 @@ def executeScripts(target='start_script'):
         scripts = migration.get(target)['script']
         print scripts
         for script in scripts.split(","):
-            print "Python Script(%s): "%(target),script
-            subprocess.call(["python", script])
+            print "Python Script(%s): " % (target),script
+            subprocess.call(["python " + script], shell=True)
+
+
+def _parent_store_compute(cr, table, field):
+        def browse_rec(root, pos=0):
+            where = field + '=' + str(root)
+
+            if not root:
+                where = parent_field + 'IS NULL'
+
+            cr.execute('SELECT id FROM %s WHERE %s \
+                ORDER BY %s' % (table, where, field))
+            pos2 = pos + 1
+            childs = cr.fetchall()
+            for id in childs:
+                pos2 = browse_rec(id[0], pos2)
+            cr.execute('update %s set "left"=%s, "right"=%s\
+                where id=%s' % (table, pos, pos2, root))
+            return pos2 + 1
+
+        query = 'SELECT id FROM %s WHERE %s IS NULL order by %s' % (
+            table, field, field)
+        pos = 0
+        cr.execute(query)
+        for (root,) in cr.fetchall():
+            pos = browse_rec(root, pos)
+        return True
+
+
+def calc_parent_leftright(targetCR):
+    migration = readConfigFile('migration.cfg')
+    tables = []
+    for table ,values in migration.iteritems():
+        parent = values.get('parent')
+        if parent is None or parent == 'False':
+            continue
+        tables.append((table, parent))
+
+    for table, field in tables:
+        print "calculating parent_left of table", table, "and field:", field
+        _parent_store_compute(targetCR, table, field)
+
+
 
 def migrate(targetCR):
 
@@ -723,21 +768,13 @@ def migrate(targetCR):
     print "upload data FINISH"
 
     print "Execute start scripts"
-    executeScripts('end_scripts')
+    executeScripts('end_script')
 
     #Set constraints as undeferred
     print "Restoring Constraints"
     updateConstraints(targetCR, False)
-
-#    print "executing Scripts"
-#    data = readConfigFile('migration.cfg')
-#    if data.get('script'):
-#        scripts = data['script']['script']
-#        print scripts
-#        for script in scripts.split(","):
-#            subprocess.call(["python", script])
-#            print "script:",script
-
+    print "Calc Parent Left-Right on Tables"
+    calc_parent_leftright(targetCR)
 
 
 
