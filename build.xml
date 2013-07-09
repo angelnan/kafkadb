@@ -50,7 +50,7 @@
 
 	<target depends="init" name="build">
 		<echo message="${ant.project.name}: ${ant.file}" />
-		<javac debug="true" debuglevel="${debuglevel}" destdir="${build}" srcdir="${src}">			
+        <javac debug="true" destdir="${build}" srcdir="${src}">
 			<classpath refid="classpath" />
 		</javac>
 	</target>

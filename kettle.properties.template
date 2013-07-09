@@ -1,19 +1,19 @@
 # Source database configuration
-source = dbname_source
+source = nan_130701
 source_host = localhost
 source_port = 5432
-source_user = user
+source_user = angel
 source_password = password
 
 # Target database configuration
-target = dbname_target
+target = nan
 target_host = localhost
 target_port = 5432
-target_user = user
+target_user = angel
 target_password = password
 
 # Transformation repository
-transformation_path = /home/.../kafkadb_openerp2tryton
+transformation_path = /home/angel/projectes/kafkadb/kafkadb_openerpv5_tryton
 migration_config = migration.cfg
 
 # Pre/Post Python scripts (separated by ,)
