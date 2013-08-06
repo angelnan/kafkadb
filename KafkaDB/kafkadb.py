@@ -655,6 +655,8 @@ def executeScripts(target='start_script'):
         print scripts
         for script in scripts.split(","):
             print "Python Script(%s): " % (target),script
+            if not script:
+                continue
             subprocess.call(["python " + script], shell=True)
 
 
@@ -835,6 +837,7 @@ if __name__ == '__main__':
         make_config_file(targetCR, config['migration_config'])
 
     source_db.close()
+    target_db.commit()
     target_db.close()
 
     if config.get('end_scripts') and settings.get('migrate'):
