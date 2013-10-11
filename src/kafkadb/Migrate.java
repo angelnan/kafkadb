@@ -423,11 +423,11 @@ public class Migrate {
 			String target = table;
 
 			if (config.options(table).contains("source")) {
-				source = config.get(table, "source");
+				source = '"' + config.get(table, "source") + '"';
 				log.info("SOURCE:" + source);
 			}
 			if (config.options(table).contains("target")) {
-				target = config.get(table, "target");
+				target = '"' + config.get(table, "target") + '"';
 				log.info("Target:" + target);
 			}
 
