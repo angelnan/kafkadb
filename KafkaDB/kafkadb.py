@@ -553,6 +553,7 @@ def make_config(targetCr):
                         module, script_file)]
                 continue
 
+
             if key in result:
                 if not eval(value.get('insert','False')):
                     result[key]['transformation'] = "%s,%s/%s" % (
@@ -569,6 +570,10 @@ def make_config(targetCr):
 
                 result[key]['delete'] = str(eval(result[key]['delete']) or
                         eval(value['delete']))
+
+                if not 'parent' in result[key]:
+                    result[key]['parent'] = 'False'
+
                 result[key]['parent'] = str(eval(result[key].get('parent','False')) or
                         eval(value.get('parent','False')))
                 result[key]['mapping'] = get_value(result[key]['mapping'],
@@ -623,8 +628,8 @@ def migrate_sql():
                 'CREATE TABLE migration.%s (source int, target int);\n' % (
                 mapp))
 
-        disable.append("ALTER TABLE %s DISABLE TRIGGER ALL;\n" % target_table)
-        enable.append("ALTER TABLE %s ENABLE TRIGGER ALL;\n" % target_table)
+        disable.append('ALTER TABLE "%s" DISABLE TRIGGER ALL;\n' % target_table)
+        enable.append('ALTER TABLE "%s" ENABLE TRIGGER ALL;\n' % target_table)
         sequence.append("select setval('%s_id_seq', (select max(id) from %s));"
             "\n" % (target_table, target_table))
 
@@ -652,7 +657,7 @@ def executeScripts(target='start_script'):
     migration = readConfigFile('migration.cfg')
     if migration.get(target):
         scripts = migration.get(target)['script']
-        print scripts
+        #print scripts
         for script in scripts.split(","):
             print "Python Script(%s): " % (target),script
             if not script:
@@ -720,7 +725,7 @@ def migrate(targetCR):
 
     if map_sql:
         print "Prepare Statements.."
-        print map_sql
+        #print map_sql
         targetCR.execute(map_sql)
         target_db.commit()
 
@@ -735,7 +740,7 @@ def migrate(targetCR):
 
     if prepare_sql:
         print "Prepare Statements.."
-        print prepare_sql
+    #    print prepare_sql
         targetCR.execute(prepare_sql)
 
     #Read copy generated file
@@ -760,7 +765,7 @@ def migrate(targetCR):
 
     if copy_sql:
         print "upload finish, comitting..."
-        print copy_sql
+    #    print copy_sql
         targetCR.execute(copy_sql)
 
     print "enable triggers again"

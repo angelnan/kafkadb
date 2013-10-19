@@ -104,7 +104,7 @@ def writeConfigFile(config, filename):
     if 'start_script' in config:
         script = config.pop('start_script')
         config_parser.set('start_script','script',script)
-    
+
     if 'end_script' in config:
         script = config.pop('end_script')
         config_parser.set('end_script','script',script)
