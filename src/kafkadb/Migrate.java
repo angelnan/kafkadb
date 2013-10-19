@@ -91,13 +91,13 @@ public class Migrate {
 		// Get fields input from step.
 		List<String> fieldList = new ArrayList<String>();
 
-		log.info("Get Previous fields:" + step.getName());
+		//log.info("Get Previous fields:" + step.getName());
 		RowMetaInterface rmi = transMeta.getPrevStepFields(step);
 		if (rmi==null && rmi.isEmpty()) 
 			return fieldList;
 		
 		
-		log.info("Get previous fields rmi:" + rmi);
+		//log.info("Get previous fields rmi:" + rmi);
 		String[] fields = rmi.getFieldNames();
 		for (int i = 0; i < fields.length; i++) {
 			fieldList.add(fields[i]);
@@ -111,7 +111,7 @@ public class Migrate {
 			String targetTable) throws Exception {
 
 		// Get fields from table output.
-		log.info("\n\t\tGetting target Fields from table.:" + targetTable);
+		//log.info("\n\t\tGetting target Fields from table.:" + targetTable);
 
 		Database targetDatabase = new Database(targetDb);
 		targetDatabase.connect();
@@ -119,7 +119,7 @@ public class Migrate {
 		String[] targetFields = targetDatabase.getQueryFields(
 				"select * from " + targetTable, true).getFieldNames();
 
-		log.info("Target fields:" + targetFields.toString());
+		//log.info("Target fields:" + targetFields.toString());
 
 		List<String> selectFields = new ArrayList<String>();
 		for (int i = 0; i < targetFields.length; i++) {
@@ -202,14 +202,14 @@ public class Migrate {
 		
 		// Get Fields from Input step.
 		List<String> fromFields = getPreviousFields(transMeta, fromStep);
-		log.info("Previous fields:" + fromFields.toString());
-		log.info("Get target fields table:" + target);
+		//log.info("Previous fields:" + fromFields.toString());
+		//log.debug("Get target fields table:" + target);
 		// Get Target field from table
 		String[] selectFields = getTargetFields(fromFields, target);
 
 		x += xoffset;
 
-		log.info("filenames:" + filename.toString());
+		//log.info("filenames:" + filename.toString());
 		// LOAD TRANS NODE
 		StepMeta sourceJoin=fromStep;
 		
@@ -217,7 +217,7 @@ public class Migrate {
 
 			for( Iterator<String> filenameIt = filename.iterator(); filenameIt.hasNext();){
 				String file = (String) filenameIt.next();
-				log.info("**************** Process File:"+ file);
+				//log.info("**************** Process File:"+ file);
 		
 				// Load ktr
 				TransMeta readktr = new TransMeta(file);
@@ -235,16 +235,16 @@ public class Migrate {
 				for (StepMeta temp : steps) {
 					temp.setName(transMeta.getAlternativeStepname(temp.getName()));
 					temp.setLocation(temp.getLocation().x,temp.getLocation().y * (1+filename.indexOf(file))*2);
-					log.info("adding step:"+temp.getName());
+					//log.info("adding step:"+temp.getName());
 					transMeta.addStep(temp);					
 				}
 				
 				if(sourceStepMeta == null || targetStepMeta == null){
-					log.info("\n\nNo Source or Target Step finded on file "+file);
+					//log.info("\n\nNo Source or Target Step finded on file "+file);
 				}
 				 
 				TransHopMeta fs = new TransHopMeta(sourceJoin, sourceStepMeta);
-				log.info("Make hop: "+sourceJoin.getName() +"-"+ sourceStepMeta.getName());
+				//log.info("Make hop: "+sourceJoin.getName() +"-"+ sourceStepMeta.getName());
 				transMeta.addTransHop(fs);				
 				sourceJoin = targetStepMeta;
 				
@@ -253,7 +253,7 @@ public class Migrate {
 			
 		transMeta.writeXML("/tmp/output/" + source + "-" + target + "-debug.ktr");			
 		
-		log.info("Final Text");
+		//log.info("Final Text");
 
 		// Add Final text file output.
 		String path = outputDir + target;
@@ -268,7 +268,7 @@ public class Migrate {
 		fileOutput.setEnclosureForced(true);
 		fileOutput.setFileCompression(TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE]);
 
-		log.info("Select Values");
+		//log.info("Select Values");
 		// SelectValues
 		// ADD this step to ensure all field on transformations exists
 		// on target table.
@@ -313,11 +313,11 @@ public class Migrate {
 
 			TransHopMeta ofs = new TransHopMeta(sourceJoin,selectStep);
 			transMeta.addTransHop(ofs);
-			log.info("Make hop: "+sourceJoin.getName() +"-"+ selectStep.getName());
+			//log.info("Make hop: "+sourceJoin.getName() +"-"+ selectStep.getName());
 
 			
 			TransHopMeta st = new TransHopMeta(selectStep, toStep);
-			log.info("Make hop: "+selectStep.getName() +"-"+ toStep.getName());
+			//log.info("Make hop: "+selectStep.getName() +"-"+ toStep.getName());
 			transMeta.addTransHop(st);
 
 			
@@ -325,12 +325,12 @@ public class Migrate {
 			// If Transformation, then got the dummy output and look for
 			// output fields from that step.
 			
-			log.info("Get previous Fields:"+sourceJoin.getName()); 
+			//log.info("Get previous Fields:"+sourceJoin.getName()); 
 			fromFields = getPreviousFields(transMeta, toStep);
-			log.info("Get Target FIelds"); 
+			//log.info("Get Target FIelds"); 
 			selectFields =  getTargetFields(fromFields, target);
 			  
-			log.info("allocate memory");
+			//log.info("allocate memory");
 			selectMeta.allocate(selectFields.length, 0, 0);
 			selectMeta.setSelectName(selectFields); 
 			tf = getFileFields(transMeta, toStep, target);
@@ -376,9 +376,9 @@ public class Migrate {
 
 		// Database uses
 		sourceDb = transMeta2.findDatabase("source");
-		log.info("source databse:" + sourceDb);
+		//log.info("source databse:" + sourceDb);
 		targetDb = transMeta2.findDatabase("target");
-		log.info("target databse:" + targetDb);
+		//log.info("target databse:" + targetDb);
 
 	}
 
@@ -412,8 +412,8 @@ public class Migrate {
 		// Create and Execute transformation in ORder:
 		for (String table : execOrder) {
 
-			log.info("\n\n\n************************************** Transformation:"
-					+ table);
+			//log.info("\n\n\n************************************** Transformation:"
+//					+ table);
 
 			// Get all ktr available for this table
 			List<String> files = Arrays.asList(config.get(table,
@@ -453,7 +453,7 @@ public class Migrate {
 	public static void start(String migration_filename, String kettle_shared)
 			throws Exception {
 
-		log.info("Start Kettle process");
+		//log.info("Start Kettle process");
 		Migrate.init(kettle_shared);
 		Migrate.config.read(migration_filename);
 		Migrate.readConfig(migration_filename);
