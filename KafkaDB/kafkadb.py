@@ -619,18 +619,19 @@ def migrate_sql():
             continue
 
         if eval(value.get('delete', 'False')):
-            delete.append("DELETE FROM %s; \n" % target_table)
+            delete.append('DELETE FROM "%s"; \n' % target_table)
 
         if value.get('mapping') and value.get('mapping') != 'None':
             mappings = value['mapping'].split(',')
             for mapp in mappings:
                 mapping.append(
-                'CREATE TABLE migration.%s (source int, target int);\n' % (
+                'CREATE TABLE migration."%s" (source int, target int);\n' % (
                 mapp))
 
         disable.append('ALTER TABLE "%s" DISABLE TRIGGER ALL;\n' % target_table)
         enable.append('ALTER TABLE "%s" ENABLE TRIGGER ALL;\n' % target_table)
-        sequence.append("select setval('%s_id_seq', (select max(id) from %s));"
+        sequence.append(
+            "select setval('%s_id_seq', (select max(id) from \"%s\"));"
             "\n" % (target_table, target_table))
 
     # DELETE TABLE DATA BEFORE INSERT
@@ -672,7 +673,7 @@ def _parent_store_compute(cr, table, field):
             if not root:
                 where = parent_field + 'IS NULL'
 
-            cr.execute('SELECT id FROM %s WHERE %s \
+            cr.execute('SELECT id FROM "%s" WHERE %s \
                 ORDER BY %s' % (table, where, field))
             pos2 = pos + 1
             childs = cr.fetchall()
@@ -682,7 +683,7 @@ def _parent_store_compute(cr, table, field):
                 where id=%s' % (table, pos, pos2, root))
             return pos2 + 1
 
-        query = 'SELECT id FROM %s WHERE %s IS NULL order by %s' % (
+        query = 'SELECT id FROM "%s" WHERE %s IS NULL order by %s' % (
             table, field, field)
         pos = 0
         cr.execute(query)

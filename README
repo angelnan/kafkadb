@@ -1,0 +1,79 @@
+KafkaDB
+=======
+
+KafkaDB is a a Kettle-based framework for migrating data between databases with
+different structures (ie. different versions of the same application) and has
+been specifically designed to make transforms highly reusable, making it ideal
+for module/plugin-based applications such as OpenERP and Tryton.
+
+Requirements
+------------
+
+* Linux (maybe other UNIX based systems?)
+* Java JDK: it works with openJDK
+* Pentaho Data Integration (Kettle): http://kettle.pentaho.com/
+  Extract the stable version in a relative path to KafkaDB directory
+  (requirement to compile KafkaDB jar)
+
+Installing
+----------
+
+# Get KafkaDB:
+#* $ git clone git@bitbucket.org:angelnan/kafkadb.git
+# Get submodules with OpenERPv5 -> Tryton project and KafkaDB's wiki
+## $ git submodule init
+## $ git submodule update
+# Create a symbolic link to Kettle instalation path. *It must to be relative*
+# Create a symboli link to the *.kettle* directory in your home
+# Copy the content of *shared.xml* file in KafkaDB project into the same file
+  in the _.kettle_ directory of your home. If you haven't used Kettle before
+  you can replace the file.
+  It defines the _source_ and _target_ connections based on variables from
+  _kettle.properties_. Customize it if your source or target are not PostgreSQL
+  databases.
+# Compile the kafka.jar file:
+#* $ ant package
+# Copy the kettle.properties.template file to kettle.properties and customize
+  database connections to source and target and the transformation path
+  (the other options should works for you).
+
+Package Contents
+----------------
+
+  KafkaDB/
+      Sources of KafkaDB Python script
+
+  src/
+      Sources of KafkaDB Java application
+
+  snippets/
+      Some scripts used in KafkaDB process or for startup.
+
+  libext/
+      Some required Java libraries.
+
+  kafkadb_openerpv5_tryton/
+      Submodule with transformations to migrate OpenERP v5 to Tryton
+
+  wiki/
+      Wiki of KafkaDB Bitbucket project
+
+  kafka
+      Bash script to launch KafkaDB Python script
+
+  migrate.sh
+      Bash script to launch a complete KafkaDB process (data hardcoded)
+
+Support
+-------
+
+License
+-------
+
+See LICENSE
+
+Copyright
+---------
+
+See project files for the complete list of Copyright owners.
+
