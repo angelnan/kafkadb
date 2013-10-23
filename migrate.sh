@@ -5,6 +5,7 @@ dropdb nan
 createdb -T nan0 nan
 ./kafka --make-config
 rm -rf /tmp/output
+rm .kettle/db.cache
 
 
 pushd kettle;
