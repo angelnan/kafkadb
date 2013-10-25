@@ -770,7 +770,7 @@ def migrate(targetCR):
         targetCR.execute(copy_sql)
 
     print "enable triggers again"
-    print finish_sql
+    #print finish_sql
     targetCR.execute(finish_sql)
     target_db.commit()
     print "upload data FINISH"
