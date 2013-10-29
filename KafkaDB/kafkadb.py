@@ -571,11 +571,12 @@ def make_config(targetCr):
                 result[key]['delete'] = str(eval(result[key]['delete']) or
                         eval(value['delete']))
 
-                if not 'parent' in result[key]:
-                    result[key]['parent'] = 'False'
+                parent = 'parent'
+                if not parent in result[key]:
+                    result[key][parent] = 'False'
 
-                result[key]['parent'] = str(eval(result[key].get('parent','False')) or
-                        eval(value.get('parent','False')))
+                result[key][parent] = str(eval(result[key].get(parent,'False')) or
+                        eval(value.get(parent,'False')))
                 result[key]['mapping'] = get_value(result[key]['mapping'],
                         value['mapping'])
                 continue
