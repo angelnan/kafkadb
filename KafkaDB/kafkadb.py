@@ -632,11 +632,13 @@ def migrate_sql():
         disable.append('ALTER TABLE "%s" DISABLE TRIGGER ALL;\n' % target_table)
         enable.append('ALTER TABLE "%s" ENABLE TRIGGER ALL;\n' % target_table)
         target_sequence = '%s_id_seq' % target_table
+        target_field = 'id'
         if '__history' in target_table:
             target_sequence = '%s___id_seq' % target_table
+            target_field = '__id'
         sequence.append(
-            "select setval('%s', (select max(id) from \"%s\"));"
-            "\n" % (target_sequence, target_table))
+            "select setval('%s', (select max(%s) from \"%s\"));"
+            "\n" % (target_sequence, target_field, target_table))
 
     # DELETE TABLE DATA BEFORE INSERT
     # DISABLE TRIGGERS
