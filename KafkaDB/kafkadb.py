@@ -475,12 +475,14 @@ def make_dependencies(data):
             if not depends:
                 depends = 'res_user'
             depends = [x.strip() for x in depends.split(',')]
-            index = 0
             for depend in depends:
                 if depend not in order:
                     order = add_table(depend, order)
-                index = max(index, order.index(depend)) + 1
+            index = 0
+            for depend in depends:
+                index = max(index, order.index(depend))
             if table not in order:
+                index += 1
                 order = order[:index] + [table] + order[index:]
         return order
 
