@@ -628,9 +628,15 @@ def migrate_sql():
         if value.get('mapping') and value.get('mapping') != 'None':
             mappings = value['mapping'].split(',')
             for mapp in mappings:
-                mapping.append(
-                'CREATE TABLE migration."%s" (source int, target int);\n' % (
-                mapp))
+                if mapp == 'account_payment_type_mapping':
+                    mapping.append(
+                    'CREATE TABLE migration."%s" '
+                        '(source int, target int, kind character varying);\n'
+                    % (mapp))
+                else:
+                    mapping.append(
+                    'CREATE TABLE migration."%s" (source int, target int);\n'
+                    % (mapp))
 
         disable.append('ALTER TABLE "%s" DISABLE TRIGGER ALL;\n' % target_table)
         enable.append('ALTER TABLE "%s" ENABLE TRIGGER ALL;\n' % target_table)
