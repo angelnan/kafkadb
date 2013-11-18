@@ -517,7 +517,7 @@ def make_config(targetCr):
 
     file_list = getFiles(config['transformation_path'])
     result = {}
-    config_file_list = set([x for x in file_list if '.cfg' in x])
+    config_file_list = sorted(set([x for x in file_list if '.cfg' in x]))
 
     dirname = os.path.dirname(config['sql_prepare'])
     if dirname and not os.path.exists(dirname):
