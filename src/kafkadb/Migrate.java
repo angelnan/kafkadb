@@ -422,6 +422,8 @@ public class Migrate {
 			String source = table;
 			String target = table;
 
+            log.info("Starting transofrmation execution: table=" + table +
+                ", transformations=" + config.get(table, "transformation"));
 			if (config.options(table).contains("source")) {
 				source = '"' + config.get(table, "source") + '"';
 				log.info("SOURCE:" + source);
