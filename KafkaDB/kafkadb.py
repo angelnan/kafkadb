@@ -464,6 +464,34 @@ def getModuleDiff(source, target):
 def make_dependencies(data):
     order = []
     trans = data.copy()
+    while trans:
+        table, table_data = trans.popitem()
+        depends = table_data['depends'] and \
+                table_data['depends'].split(',') or []
+        depends = list(set([x.strip(' ') for x in depends]))
+
+        a = order[:]
+        b = []
+        if table in order:
+            a = order[:order.index(table)]
+            b = order[order.index(table):]
+        else:
+            b = [table]
+
+        for depend in depends:
+            if depend in b:
+                b.remove(depend)
+            if not depend in a:
+                a.append(depend)
+
+        order = a + b
+
+    return order
+
+
+def make_dependencies2(data):
+    order = []
+    trans = data.copy()
 
     def add_table(table, order):
         if table in order:
