@@ -6,16 +6,16 @@
 	<property name="src" value="./src" />
 	<property name="build" value="./build" />
 	<property name="lib.dir" value="./kettle/lib" />
-	<property name="libext.dir" value="./kettle/libext" />
+    <!--	<property name="libext.dir" value="./kettle/libext" /> -->
 	<property name="kafkadb.libext.dir" value="./libext" />
 	<property name="main-class" value="kafkadb.Main" />
 
 	<path id="classpath">
 		<pathelement path="${classpath}"/>
 		<fileset dir="${lib.dir}" includes="**/*.jar" />
-		<fileset dir="${libext.dir}">
+        <!--		<fileset dir="${libext.dir}">
 			<include name="**/*.jar" />
-		</fileset>
+        </fileset> -->
 		<fileset dir="${kafkadb.libext.dir}">
 			<include name="**/*.jar" />
 		</fileset>
