@@ -637,6 +637,10 @@ def migrate_sql():
                     mapping.append(
                     'CREATE TABLE migration."%s" (source int, target int);\n'
                     % (mapp))
+                if mapp == 'stock_location_mapping':
+                    mapping.append(
+                        'CREATE TABLE migration."stock_warehouse_mapping" '
+                        '(source int, target int);')
 
         disable.append('ALTER TABLE "%s" DISABLE TRIGGER ALL;\n' % target_table)
         enable.append('ALTER TABLE "%s" ENABLE TRIGGER ALL;\n' % target_table)
