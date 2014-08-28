@@ -1,9 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 ##############################################################################
 #
-# Copyright (c) 2011-2013 NaN Projectes de Programari Lliure, S.L.
+# Copyright (c) 2011-2014 NaN Projectes de Programari Lliure, S.L.
 # http://www.NaN-tic.com
 # All Rights Reserved.
 #
@@ -29,13 +28,11 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ##############################################################################
-
-import psycopg2
-import os
+import ConfigParser
 import optparse
+import os
 import sys
 import subprocess
-import ConfigParser
 
 from tools import *
 
@@ -111,11 +108,10 @@ def moduleFactory(cursor, name, program, version=None):
     if program == 'tryton':
         return TrytonModule(cursor, name, program, version)
     elif program == 'openerp':
-        return  OpenerpModule(cursor, name, program, version)
+        return OpenerpModule(cursor, name, program, version)
     else:
         print "not suported yet"
         return None
-
 
 
 class Module(object):
@@ -143,7 +139,7 @@ class Module(object):
 
         files = getFiles(path)
         for filename in files:
-            if not '.ktr' in filename:
+            if '.ktr' not in filename:
                 continue
             file_model = filename.split('/')[-1]
             model = file_model[:-4]
@@ -192,7 +188,6 @@ class Module(object):
         writeConfigFile(data, self.filename)
 
 
-
 class OpenerpModule(Module):
 
     program = 'openerp'
@@ -235,7 +230,7 @@ class TrytonModule(Module):
             'FROM'
             '   ir_model_data '
             'WHERE'
-            '   module = %s ) as aux', (self.name,self.name))
+            '   module = %s ) as aux', (self.name, self.name))
 
         for model_name, in self.cursor.fetchall():
             model_name = model_name.replace('.', '_')
@@ -245,7 +240,7 @@ class TrytonModule(Module):
 
 def migrate_module(source, target, module):
 
-    #sourceModule = moduleFactory( source, module, 'openerp')
+    # sourceModule = moduleFactory( source, module, 'openerp')
     targetModule = moduleFactory(target, module, 'tryton')
 
     targetModule.writeConfigFile()
@@ -311,8 +306,8 @@ def parse_arguments(arguments):
     return settings
 
 
-#TOOLS
-#TOOD: unused
+# TOOLS
+# TOOD: unused
 def getFields(cursor):
     query = """ SELECT
             a.attname as field,
@@ -349,11 +344,11 @@ def getFields(cursor):
     return source.copy()
 
 
-#TOOLS
+# TOOLS
 def getModel(cursor, tableName=None, fieldName=None):
 
     model = None
-    if not tableName is None:
+    if tableName is not None:
         query = """
                SELECT
                      module
@@ -367,7 +362,7 @@ def getModel(cursor, tableName=None, fieldName=None):
         if model:
             model = model[0]
 
-    if not fieldName is None:
+    if fieldName is not None:
         if tableName:
             where = "field_%s_%s" % (tableName, fieldName)
         else:
@@ -386,15 +381,15 @@ def getModel(cursor, tableName=None, fieldName=None):
     return model
 
 
-#TOOLS
+# TOOLS
 def updateConstraints(cursor, deferred):
     cursor.execute("UPDATE pg_trigger set tgdeferrable = %s" % deferred)
     cursor.execute("UPDATE pg_constraint set condeferrable=%s" % deferred)
 
 
-#TOOLS
+# TOOLS
 def getFiles(path='model-ktr'):
-    #TODO: get all transformation for a given module.
+    # TODO: get all transformation for a given module.
 
     fileList = []
     for root, subFolders, files in os.walk(path):
@@ -409,9 +404,8 @@ def getFiles(path='model-ktr'):
     return fileList
 
 
-#TOOLS
+# TOOLS
 def getTransformations(path='model-ktr'):
-
     ktr = {}
     fileList = list(set(getFiles(path)))
     for file in fileList:
@@ -420,7 +414,7 @@ def getTransformations(path='model-ktr'):
     return ktr
 
 
-#TOOLS
+# TOOLS
 def getModuleDiff(source, target):
 
     tables = list(set(source.keys() + target.keys()))
@@ -447,18 +441,19 @@ def getModuleDiff(source, target):
                 thash = target[table]['hash']
                 if shash == thash:
                     continue
-                resutl[table]['parent'] = False
+                result[table]['parent'] = False
                 result[table]['migrate'] = False
-                result[table]['source'] = [x[0] for x in list(set(shash) - set(thash))]
-                result[table]['target'] = [x[0] for x in list(set(thash) - set(shash))]
+                result[table]['source'] = [x[0]
+                    for x in list(set(shash) - set(thash))]
+                result[table]['target'] = [x[0]
+                    for x in list(set(thash) - set(shash))]
                 result[table]['delete'] = True
 
-        elif table in source and not table in target:
+        elif table in source and table not in target:
             result[table]['on'] = 'source'
         else:
             result[table]['on'] = 'target'
     return result.copy()
-
 
 
 def make_dependencies(data):
@@ -492,15 +487,12 @@ def make_dependencies(data):
     return order
 
 
-
 def make_config_file(targetCR, filename):
-
     result = make_config(targetCR)
     writeConfigFile(result, config['migration_config'])
 
 
-def get_value( val, val2 ):
-
+def get_value(val, val2):
     if val is None:
         val = ''
     if val2 is None:
@@ -513,8 +505,8 @@ def get_value( val, val2 ):
     elif not val.strip() and val2.strip():
         return val2.strip()
 
-def make_config(targetCr):
 
+def make_config(targetCr):
     file_list = getFiles(config['transformation_path'])
     result = {}
     config_file_list = sorted(set([x for x in file_list if '.cfg' in x]))
@@ -541,7 +533,7 @@ def make_config(targetCr):
             if value.get('start_script') and \
                     value.get('start_script') != 'False':
 
-                script_path=config['transformation_path']
+                script_path = config['transformation_path']
                 for script_file in value['start_script'].split(","):
                     start_script += [os.path.join(script_path,
                         module, script_file)]
@@ -550,15 +542,14 @@ def make_config(targetCr):
             if value.get('end_script') and \
                     value.get('end_script') != 'False':
 
-                script_path=config['transformation_path']
+                script_path = config['transformation_path']
                 for script_file in value['end_script'].split(","):
                     end_script += [os.path.join(script_path,
                         module, script_file)]
                 continue
 
-
             if key in result:
-                if not eval(value.get('insert','False')):
+                if not eval(value.get('insert', 'False')):
                     result[key]['transformation'] = "%s,%s/%s" % (
                         result[key]['transformation'],
                         module,
@@ -575,11 +566,12 @@ def make_config(targetCr):
                         eval(value['delete']))
 
                 parent = 'parent'
-                if not parent in result[key]:
+                if parent not in result[key]:
                     result[key][parent] = 'False'
 
-                result[key][parent] = str(eval(result[key].get(parent,'False')) or
-                        eval(value.get(parent,'False')))
+                result[key][parent] = str(
+                    eval(result[key].get(parent, 'False'))
+                    or eval(value.get(parent, 'False')))
                 result[key]['mapping'] = get_value(result[key]['mapping'],
                         value['mapping'])
                 continue
@@ -594,7 +586,8 @@ def make_config(targetCr):
     dependencies = make_dependencies(result)
     if None in dependencies:
         dependencies.remove(None)
-    result['transformation_order'] = ",".join([x.strip() for x in dependencies])
+    result['transformation_order'] = ",".join([x.strip()
+        for x in dependencies])
     result['start_script'] = ",".join(start_script)
     result['end_script'] = ",".join(end_script)
 
@@ -602,7 +595,6 @@ def make_config(targetCr):
 
 
 def migrate_sql():
-
     data = readConfigFile('migration.cfg')
 
     delete = []
@@ -616,7 +608,7 @@ def migrate_sql():
     for key, value in data.iteritems():
         target_table = value.get('target', key)
 
-        if key in ['transformation_order','start_script','end_script']:
+        if key in ['transformation_order', 'start_script', 'end_script']:
             continue
 
         if value.get('migrate') == 'False':
@@ -642,7 +634,8 @@ def migrate_sql():
                         'CREATE TABLE migration."stock_warehouse_mapping" '
                         '(source int, target int);')
 
-        disable.append('ALTER TABLE "%s" DISABLE TRIGGER ALL;\n' % target_table)
+        disable.append('ALTER TABLE "%s" DISABLE TRIGGER ALL;\n'
+            % target_table)
         enable.append('ALTER TABLE "%s" ENABLE TRIGGER ALL;\n' % target_table)
         target_sequence = '%s_id_seq' % target_table
         target_field = 'id'
@@ -677,44 +670,44 @@ def executeScripts(target='start_script'):
     migration = readConfigFile('migration.cfg')
     if migration.get(target):
         scripts = migration.get(target)['script']
-        #print scripts
+        # print scripts
         for script in scripts.split(","):
-            print "Python Script(%s): " % (target),script
+            print "Python Script(%s): " % (target), script
             if not script:
                 continue
             subprocess.call(["python " + script], shell=True)
 
 
 def _parent_store_compute(cr, table, field):
-        def browse_rec(root, pos=0):
-            where = field + '=' + str(root)
+    def browse_rec(root, pos=0):
+        where = field + '=' + str(root)
 
-            if not root:
-                where = parent_field + 'IS NULL'
+        if not root:
+            where = parent_field + 'IS NULL'
 
-            cr.execute('SELECT id FROM "%s" WHERE %s \
-                ORDER BY %s' % (table, where, field))
-            pos2 = pos + 1
-            childs = cr.fetchall()
-            for id in childs:
-                pos2 = browse_rec(id[0], pos2)
-            cr.execute('update %s set "left"=%s, "right"=%s\
-                where id=%s' % (table, pos, pos2, root))
-            return pos2 + 1
+        cr.execute('SELECT id FROM "%s" WHERE %s \
+            ORDER BY %s' % (table, where, field))
+        pos2 = pos + 1
+        childs = cr.fetchall()
+        for id in childs:
+            pos2 = browse_rec(id[0], pos2)
+        cr.execute('update %s set "left"=%s, "right"=%s\
+            where id=%s' % (table, pos, pos2, root))
+        return pos2 + 1
 
-        query = 'SELECT id FROM "%s" WHERE %s IS NULL order by %s' % (
-            table, field, field)
-        pos = 0
-        cr.execute(query)
-        for (root,) in cr.fetchall():
-            pos = browse_rec(root, pos)
-        return True
+    query = 'SELECT id FROM "%s" WHERE %s IS NULL order by %s' % (
+        table, field, field)
+    pos = 0
+    cr.execute(query)
+    for (root,) in cr.fetchall():
+        pos = browse_rec(root, pos)
+    return True
 
 
 def calc_parent_leftright(targetCR):
     migration = readConfigFile('migration.cfg')
     tables = []
-    for table ,values in migration.iteritems():
+    for table, values in migration.iteritems():
         parent = values.get('parent')
         if parent is None or parent == 'False':
             continue
@@ -725,10 +718,8 @@ def calc_parent_leftright(targetCR):
         _parent_store_compute(targetCR, table, field)
 
 
-
 def migrate(targetCR):
-
-    #Execute java process
+    # Execute java process
     if not os.path.exists(config['sql_files']):
         os.makedirs(config['sql_files'])
 
@@ -745,14 +736,14 @@ def migrate(targetCR):
 
     if map_sql:
         print "Prepare Statements.."
-        #print map_sql
+        # print map_sql
         targetCR.execute(map_sql)
         target_db.commit()
 
     subprocess.call(["java", "-jar", "kafkadb.jar", "migration.cfg"])
     print "Kettle transformation process finish"
 
-    #Read prepare strings
+    # Read prepare strings
     print "Reading PREPARE file..."
     f = open(config['sql_prepare'])
     prepare_sql = f.read()
@@ -760,36 +751,36 @@ def migrate(targetCR):
 
     if prepare_sql:
         print "Prepare Statements.."
-    #    print prepare_sql
+        # print prepare_sql
         targetCR.execute(prepare_sql)
 
-    #Read copy generated file
+    # Read copy generated file
     print "Reading COPY file"
     f = open(config['sql_copy'])
     copy_sql = f.read()
     f.close()
 
-    #Read copy generated file
+    # Read copy generated file
     print "Reading Finish file"
     f = open(config['sql_finish'])
     finish_sql = f.read()
     f.close()
 
-    #Set constraints as deferred
+    # Set constraints as deferred
     print "Updating constraints...."
     updateConstraints(targetCR, True)
 
-    #targetCR.execute("BEGIN TRANSACTION;")
+    # targetCR.execute("BEGIN TRANSACTION;")
     print "Upload Data start..."
     targetCR.execute("SET CONSTRAINTS ALL DEFERRED;")
 
     if copy_sql:
         print "upload finish, comitting..."
-    #    print copy_sql
+        # print copy_sql
         targetCR.execute(copy_sql)
 
     print "enable triggers again"
-    #print finish_sql
+    # print finish_sql
     targetCR.execute(finish_sql)
     target_db.commit()
     print "upload data FINISH"
@@ -797,16 +788,14 @@ def migrate(targetCR):
     print "Execute start scripts"
     executeScripts('end_script')
 
-    #Set constraints as undeferred
+    # Set constraints as undeferred
     print "Restoring Constraints"
     updateConstraints(targetCR, False)
     print "Calc Parent Left-Right on Tables"
     calc_parent_leftright(targetCR)
 
 
-
 if __name__ == '__main__':
-
     settings = parse_arguments(sys.argv)
 
     config = read_kettle_properties()
@@ -814,7 +803,7 @@ if __name__ == '__main__':
     if config.get('start_scripts') and settings.get('migrate'):
         scripts = config.get('start_scripts')
         for script in scripts.split(","):
-            print "Start Python Script:",script
+            print "Start Python Script:", script
             subprocess.call(["python", script])
 
     if not os.path.exists(config['sql_files']):
@@ -829,7 +818,6 @@ if __name__ == '__main__':
 
     transformation_path = config['transformation_path']
 
-
     sourceCR = source_db.cursor()
     targetCR = target_db.cursor()
 
@@ -837,7 +825,7 @@ if __name__ == '__main__':
 
     if settings.migrate:
         print "start migration"
-        model = migrate(targetCR)
+        migrate(targetCR)
         print "end migration"
 
     if settings.model:
@@ -868,5 +856,5 @@ if __name__ == '__main__':
     if config.get('end_scripts') and settings.get('migrate'):
         scripts = config.get('end_scripts')
         for script in scripts.split(","):
-            print "End Python Script:",script
+            print "End Python Script:", script
             subprocess.call(["python", script])
