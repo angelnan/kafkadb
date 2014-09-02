@@ -509,7 +509,8 @@ def get_value(val, val2):
 def make_config(targetCr):
     file_list = getFiles(config['transformation_path'])
     result = {}
-    config_file_list = sorted(set([x for x in file_list if '.cfg' in x]))
+    config_file_list = sorted(set([x for x in file_list if '.cfg' in x]),
+        key=lambda a: a.split(os.sep)[-1])
 
     dirname = os.path.dirname(config['sql_prepare'])
     if dirname and not os.path.exists(dirname):
