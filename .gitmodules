@@ -9,4 +9,4 @@
     url = git@bitbucket.org:aneolf/kafkadb_openerpv6_tryton.git
 [submodule "kafkadb_openerpv42_tryton"]
 	path = kafkadb_openerpv42_tryton
-	url = ./kafkadb_openerpv42_tryton
+    url = git@bitbucket.org:nantic/kafkadb_openerpv42_tryton.git
